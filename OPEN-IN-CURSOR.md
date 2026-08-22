@@ -45,7 +45,14 @@ Parent settings show the actual selected English and Spanish voice names, plus w
 
 You can also double-click `LAUNCH-ARIA-GAME.bat` / `STOP-ARIA-GAME.bat` in this folder.
 
-## Optional recorded voices
+## Progressive Web App (phones & tablets)
+
+See `PWA.md` for install steps. Short version:
+
+- **iPhone/iPad (Safari):** Share → Add to Home Screen  
+- **Android (Chrome):** Menu → Install app  
+
+After one online visit, the game can start offline. Collection progress is kept across updates.
 
 See `VOICE-RECORDING-LIST.md` and folders:
 
