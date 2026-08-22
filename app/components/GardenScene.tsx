@@ -1,32 +1,32 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { SCENE_ART, type SceneId } from "../game/assets";
 
 type Props = {
-  scene?: "flower" | "woodland" | "meadow" | "pond" | "picnic" | "stage" | "hub" | "welcome";
+  /** Painted environment scene id — never flat hills */
+  sceneId?: SceneId;
   children: ReactNode;
   className?: string;
 };
 
-export function GardenScene({ scene = "hub", children, className = "" }: Props) {
+/**
+ * V5 painted activity backdrop.
+ * FORBIDDEN: flat hills, emoji bugs/flowers, sky-layer CSS hills.
+ */
+export function GardenScene({
+  sceneId = "garden-map-landscape",
+  children,
+  className = "",
+}: Props) {
+  const art = SCENE_ART[sceneId] ?? SCENE_ART["garden-map-landscape"];
   return (
-    <main className={`scene scene-${scene} ${className}`}>
-      <div className="sky-layer" aria-hidden>
-        <div className="sun" />
-        <div className="cloud cloud-a" />
-        <div className="cloud cloud-b" />
-        <div className="cloud cloud-c" />
-        <span className="drift-bug bug-1">🦋</span>
-        <span className="drift-bug bug-2">🐝</span>
+    <main className={`scene painted-scene ${className}`} data-forbid-hills="true" data-forbid-emoji="true">
+      <div className="painted-scene-env" aria-hidden>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={art.src} alt="" className="painted-scene-img" draggable={false} />
       </div>
-      <div className="hill hill-back" aria-hidden />
-      <div className="hill hill-mid" aria-hidden />
-      <div className="path" aria-hidden />
-      <div className="hill hill-front" aria-hidden />
-      <div className="flower-row" aria-hidden>
-        🌼 🌷 🌸 🌺
-      </div>
-      <div className="scene-content">{children}</div>
+      <div className="scene-content painted-scene-content">{children}</div>
     </main>
   );
 }

@@ -1,5 +1,5 @@
 import type { RewardResult } from "../data/collectionTypes";
-import type { FriendId } from "../types/game";
+import type { FriendId, LanguageMode } from "../types/game";
 
 export type ActivityAudio = {
   tap: () => void;
@@ -28,4 +28,8 @@ export type ActivityCommonProps = {
   onHomeRequest: () => void;
   onAward: () => RewardResult;
   onCatchFriend: (id: FriendId) => void;
+  onActivityComplete?: (id: string) => void;
+  onUnlockSurprise?: (id: string) => void;
+  onOpenSettings?: () => void;
+  languageMode?: LanguageMode;
 };

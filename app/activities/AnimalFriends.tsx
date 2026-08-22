@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityComplete } from "../components/ActivityComplete";
 import { ActivityShell } from "../components/ActivityShell";
-import { GardenStrip } from "../components/GardenStrip";
 import { SoftToast } from "../components/SoftToast";
 import { ANIMALS } from "../data/catalog";
 import { friendById } from "../data/friends";
@@ -84,14 +83,14 @@ export function AnimalFriendsActivity(props: ActivityCommonProps) {
 
   if (complete) {
     return (
-      <ActivityShell activityId="animals" stars={stars} starsNeeded={ROUNDS} collected={props.collected} busy speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch}>
-        <ActivityComplete titleEn="You found so many animals!" titleEs="¡Muy bien!" stars={stars} reward={lastReward} onAgain={() => { setOrder(shuffle(ANIMALS)); setStars(0); setRound(0); props.voice.speak("Let's play again!", "¡Vamos a jugar otra vez!"); }} onHome={props.onHome} gardenStrip={<GardenStrip collected={props.collected} compact />} />
+      <ActivityShell activityId="animals" stars={stars} starsNeeded={ROUNDS} collected={props.collected} busy speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onOpenSettings={props.onOpenSettings} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch}>
+        <ActivityComplete titleEn="You found so many animals!" titleEs="¡Muy bien!" stars={stars} reward={lastReward} onAgain={() => { setOrder(shuffle(ANIMALS)); setStars(0); setRound(0); props.voice.speak("Let's play again!", "¡Vamos a jugar otra vez!"); }} onHome={props.onHome} />
       </ActivityShell>
     );
   }
 
   return (
-    <ActivityShell activityId="animals" stars={stars} starsNeeded={ROUNDS} collected={props.collected} catchingId={catchingId} busy={busy} speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch} onRepeat={prompt}>
+    <ActivityShell activityId="animals" stars={stars} starsNeeded={ROUNDS} collected={props.collected} catchingId={catchingId} busy={busy} speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onOpenSettings={props.onOpenSettings} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch} onRepeat={prompt}>
       <section className="prompt">
         <p>Find the animal • Encuentra el animal</p>
         <button type="button" onClick={prompt} style={{ ["--target" as string]: "#7ec8ff" }}>

@@ -2,6 +2,7 @@
 
 import { FRIENDS } from "../data/friends";
 import type { FriendId } from "../types/game";
+import { GardenAnimal } from "./GardenAnimal";
 import { GardenScene } from "./GardenScene";
 
 type Props = {
@@ -34,7 +35,13 @@ export function MyGardenScreen({ collected, onHear, onHome }: Props) {
                 aria-label={owned ? `${f.en}, ${f.es}` : "Mystery friend"}
                 disabled={!owned}
               >
-                <span className="friend-pic">{owned ? f.emoji : "?"}</span>
+                <span className="friend-pic">
+                  {owned ? (
+                    <GardenAnimal id={f.id} pose="idle" size={72} title={`${f.en} ${f.es}`} />
+                  ) : (
+                    "?"
+                  )}
+                </span>
                 {owned ? (
                   <>
                     <strong>{f.en}</strong>

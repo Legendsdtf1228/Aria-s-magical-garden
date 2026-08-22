@@ -1,0 +1,210 @@
+/* V5 painted activity surfaces — no hills, no white cards, no color-buddy */
+
+.painted-scene {
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  max-height: 100dvh;
+  overflow: hidden;
+  background: #1a2a18;
+}
+.painted-scene-env {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.painted-scene-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.painted-scene-content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.painted-activity .painted-header {
+  background: transparent;
+  text-shadow: 0 2px 8px #0a1808aa;
+}
+.painted-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 12px 12px max(20px, env(safe-area-inset-bottom));
+  gap: 16px;
+  min-height: 0;
+}
+
+.painted-prompt-sign {
+  background: linear-gradient(#f3e2b8, #e8c988);
+  border: 3px solid #8a6230;
+  border-radius: 14px;
+  padding: 10px 18px;
+  box-shadow: 0 6px 0 #6a4820aa, 0 10px 20px #00000033;
+  text-align: center;
+  max-width: min(92vw, 420px);
+}
+.painted-prompt-line {
+  margin: 0;
+  font-weight: 800;
+  font-size: clamp(18px, 4.5vw, 26px);
+  color: #3a2810;
+}
+.painted-prompt-line.es {
+  font-size: clamp(15px, 3.8vw, 20px);
+  color: #5a4020;
+  font-weight: 700;
+}
+
+.painted-choice-row {
+  display: flex;
+  gap: clamp(8px, 3vw, 28px);
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  max-width: 960px;
+  padding-bottom: 8px;
+}
+.painted-choice-animal {
+  border: 0;
+  background: transparent;
+  padding: 8px;
+  min-width: 88px;
+  min-height: 88px;
+  cursor: pointer;
+  filter: drop-shadow(0 8px 6px #1a180855);
+}
+.painted-choice-animal.is-wiggle {
+  animation: paintedWiggle 0.45s ease;
+}
+.painted-choice-animal.is-celebrate {
+  animation: paintedCelebrate 0.7s ease;
+}
+@keyframes paintedWiggle {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px) rotate(-4deg); }
+  75% { transform: translateX(8px) rotate(4deg); }
+}
+@keyframes paintedCelebrate {
+  0%, 100% { transform: translateY(0) scale(1); }
+  40% { transform: translateY(-18px) scale(1.08); }
+}
+
+.painted-color-choices {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 720px;
+}
+.painted-color-object {
+  border: 0;
+  min-width: 100px;
+  min-height: 120px;
+  width: clamp(100px, 28vw, 160px);
+  border-radius: 18px 18px 22px 22px;
+  background: var(--fill);
+  box-shadow:
+    inset 0 -10px 0 color-mix(in srgb, var(--shade) 70%, #000),
+    0 10px 0 #00000022;
+  color: #fffef8;
+  font-weight: 800;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 12px 8px;
+  gap: 2px;
+  cursor: pointer;
+  text-shadow: 0 1px 2px #00000066;
+}
+.painted-color-object small {
+  opacity: 0.9;
+  font-weight: 700;
+}
+.painted-color-shape {
+  flex: 1;
+  width: 70%;
+  margin-bottom: 8px;
+  border-radius: 50% 50% 40% 40%;
+  background: color-mix(in srgb, #ffffff 35%, var(--fill));
+  box-shadow: inset 0 -6px 0 #00000022;
+}
+.painted-color-object.kind-can .painted-color-shape {
+  border-radius: 12px 12px 8px 8px;
+  width: 55%;
+}
+.painted-color-object.kind-bed .painted-color-shape {
+  border-radius: 40% 40% 12px 12px;
+  width: 85%;
+}
+.painted-color-object.is-wiggle {
+  animation: paintedWiggle 0.45s ease;
+}
+.painted-color-object.is-correct {
+  transform: scale(1.08);
+  filter: brightness(1.08);
+}
+.painted-petal-burst {
+  position: absolute;
+  inset: 30% 20% 40%;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 20% 40%, #ff8ab8aa 0 8%, transparent 9%),
+    radial-gradient(circle at 70% 30%, #ffe08aaa 0 7%, transparent 8%),
+    radial-gradient(circle at 50% 70%, #9ad67aaa 0 8%, transparent 9%);
+  animation: petalPop 0.9s ease-out forwards;
+}
+@keyframes petalPop {
+  0% { opacity: 0; transform: scale(0.6); }
+  40% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.4); }
+}
+
+.parent-flower-petals {
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 12%, #f2a0b8 0 22%, transparent 23%),
+    radial-gradient(circle at 88% 38%, #f2a0b8 0 22%, transparent 23%),
+    radial-gradient(circle at 70% 88%, #f2a0b8 0 22%, transparent 23%),
+    radial-gradient(circle at 28% 88%, #f2a0b8 0 22%, transparent 23%),
+    radial-gradient(circle at 12% 38%, #f2a0b8 0 22%, transparent 23%);
+}
+.parent-flower-center {
+  position: absolute;
+  inset: 32%;
+  border-radius: 50%;
+  background: linear-gradient(#ffe08a, #f0b040);
+  box-shadow: inset 0 -3px 0 #d09020;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* Hide legacy hills if any CSS still injects them */
+.painted-scene .hill,
+.painted-scene .sky-layer,
+.painted-scene .flower-row,
+.painted-scene .drift-bug {
+  display: none !important;
+}

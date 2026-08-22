@@ -42,3 +42,13 @@ test("service worker avoids caching secrets and node_modules", () => {
   assert.match(sw, /SKIP_WAITING/);
   assert.doesNotMatch(sw, /localStorage\.clear/);
 });
+
+test("service worker caches shell assets and bumps cache version", () => {
+  const sw = readFileSync(join(root, "public/sw.js"), "utf8");
+  assert.match(sw, /aria-garden-pwa-v5/);
+  assert.match(sw, /\/art\//);
+  assert.match(sw, /\/manifest\.webmanifest/);
+  assert.match(sw, /\/icons\/icon-192\.png/);
+  assert.match(sw, /isVoiceOrAudio/);
+  assert.match(sw, /audio/);
+});

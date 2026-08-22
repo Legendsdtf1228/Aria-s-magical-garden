@@ -1,0 +1,30 @@
+{
+  "method": "Heuristic pink-pixel scan of environment WebPs + visual pixel inspection of R1–R5 review PNGs.",
+  "characterSetVersion": "cast-v2",
+  "results": [
+    {
+      "label": "landscape env (R1 / garden-map-landscape.webp)",
+      "pinkishPct": 0.658,
+      "creaturesBakedIn": false,
+      "note": "PASS — cottage, tree, gazebo, pond, picnic, flowers only; no butterflies/birds/animals/insects/faces/text/UI."
+    },
+    {
+      "label": "portrait env (R2 / garden-map-portrait.webp)",
+      "pinkishPct": 0.176,
+      "creaturesBakedIn": false,
+      "note": "PASS — same empty scenery; no creatures/text/UI."
+    }
+  ],
+  "castSheet": {
+    "file": "R3-character-cast-sheet-v1.png (from cast-sheet-v2.webp)",
+    "count": 8,
+    "ids": ["butterfly", "bunny", "bird", "ladybug", "bee", "frog", "cat", "puppy"],
+    "cohesive": true
+  },
+  "composedWelcome": {
+    "landscape": "R4 — empty env + bunny/butterfly/bird/puppy overlays + title + Play flower",
+    "portrait": "R5 — empty env + same limited cast + title + Play flower with bottom safe padding"
+  },
+  "stopped": true,
+  "activityScreensUnmodified": true
+}

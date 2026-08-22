@@ -6,7 +6,7 @@ export const FRIENDS: Friend[] = [
   { id: "bird", en: "Bird", es: "Pajarito", emoji: "🐦" },
   { id: "ladybug", en: "Ladybug", es: "Mariquita", emoji: "🐞" },
   { id: "bee", en: "Bee", es: "Abejita", emoji: "🐝" },
-  { id: "frog", en: "Frog", es: "Ranita", emoji: "🐸" },
+  { id: "frog", en: "Frog", es: "Rana", emoji: "🐸" },
   { id: "cat", en: "Cat", es: "Gatito", emoji: "🐱" },
   { id: "puppy", en: "Puppy", es: "Perrito", emoji: "🐶" },
 ];

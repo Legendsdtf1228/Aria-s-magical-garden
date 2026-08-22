@@ -1,0 +1,15 @@
+{
+  "routes": [
+    "bunnyGardenPath",
+    "frogLilyPads",
+    "butterflyFlowerLoop",
+    "birdBranchRoute",
+    "ladybugLeafPath",
+    "beeFlowerRoute",
+    "catCottageArea",
+    "puppyMeadowArea"
+  ],
+  "bunny": "Feet on path; separate cast-v2 sprite; not baked into env",
+  "frog": "Sitting on lily pad; landing shows ripple; separate cast-v2 sprite",
+  "env": "welcome-garden-* / garden-map-* remain creature-free"
+}

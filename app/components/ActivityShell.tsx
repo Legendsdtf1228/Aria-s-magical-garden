@@ -3,9 +3,9 @@
 import type { ReactNode } from "react";
 import type { ActivityId, FriendId } from "../types/game";
 import { ACTIVITIES } from "../data/catalog";
-import { FloatingFriends } from "./FloatingFriends";
+import { ParentGateFlower } from "./ParentGate";
 import { GardenScene } from "./GardenScene";
-import { GardenStrip } from "./GardenStrip";
+import type { SceneId } from "../game/assets";
 
 type Props = {
   activityId: ActivityId;
@@ -15,33 +15,56 @@ type Props = {
   catchingId?: string | null;
   busy: boolean;
   speechOn: boolean;
-  onToggleSpeech: () => void;
+  onToggleSpeech?: () => void;
   onHomeRequest: () => void;
   onCatchFriend: (id: FriendId) => void;
+  onHearFriend?: (id: FriendId) => void;
+  onOpenSettings?: () => void;
   onRepeat?: () => void;
+  sceneId?: SceneId;
   children: ReactNode;
 };
 
+const ACTIVITY_SCENE: Partial<Record<ActivityId, SceneId>> = {
+  colors: "garden-map-landscape",
+  findFriend: "garden-map-landscape",
+  counting: "counting-pond",
+  feed: "garden-map-landscape",
+  animalSounds: "garden-map-landscape",
+  gardenCare: "garden-map-landscape",
+  freePlay: "garden-map-landscape",
+  shapes: "garden-map-landscape",
+  music: "garden-map-landscape",
+  animals: "garden-map-landscape",
+};
+
+/**
+ * V5 toddler activity chrome — painted environment only.
+ * REMOVED: LivingFriends SVG, FloatingFriends SVG, flat hills GardenScene.
+ */
 export function ActivityShell({
   activityId,
   stars,
   starsNeeded,
-  collected,
-  catchingId,
   busy,
-  speechOn,
-  onToggleSpeech,
   onHomeRequest,
-  onCatchFriend,
+  onOpenSettings,
   onRepeat,
+  sceneId,
   children,
 }: Props) {
   const meta = ACTIVITIES.find((a) => a.id === activityId)!;
+  const scene = sceneId ?? ACTIVITY_SCENE[activityId] ?? "garden-map-landscape";
   return (
-    <GardenScene scene={meta.scene as "flower"} className={`activity-shell ${busy ? "busy" : ""}`}>
-      <header className="activity-header">
-        <div>
-          <p className="mini">{meta.en.toUpperCase()}</p>
+    <GardenScene
+      sceneId={scene}
+      className={`activity-shell immersive-activity painted-activity ${busy ? "busy" : ""}`}
+    >
+      <header className="activity-header toddler-header painted-header">
+        <button type="button" className="icon-btn home-fab" onClick={onHomeRequest} aria-label="Home">
+          Home
+        </button>
+        {starsNeeded > 0 ? (
           <div className="stars" aria-label={`${stars} of ${starsNeeded} stars`}>
             {Array.from({ length: starsNeeded }, (_, i) => (
               <span key={i} className={i < stars ? "on" : ""}>
@@ -49,34 +72,21 @@ export function ActivityShell({
               </span>
             ))}
           </div>
-        </div>
+        ) : (
+          <span className="header-spacer" />
+        )}
         <div className="header-actions">
           {onRepeat && (
-            <button type="button" className="icon-btn" onClick={onRepeat} aria-label="Repeat">
-              🔊
+            <button type="button" className="icon-btn replay-fab" onClick={onRepeat} aria-label="Replay">
+              Replay
             </button>
           )}
-          <button
-            type="button"
-            className="icon-btn"
-            onClick={onToggleSpeech}
-            aria-label="Toggle speech"
-          >
-            {speechOn ? "🔈" : "🔇"}
-          </button>
-          <button type="button" className="icon-btn" onClick={onHomeRequest} aria-label="Home">
-            🏠
-          </button>
+          {onOpenSettings && <ParentGateFlower onOpen={onOpenSettings} />}
         </div>
       </header>
-      <GardenStrip collected={collected} catchingId={catchingId} />
-      {children}
-      <FloatingFriends
-        collected={collected}
-        paused={busy}
-        active
-        onCatch={onCatchFriend}
-      />
+
+      <div className="activity-stage painted-stage">{children}</div>
+      <span className="sr-only">{meta.en}</span>
     </GardenScene>
   );
 }

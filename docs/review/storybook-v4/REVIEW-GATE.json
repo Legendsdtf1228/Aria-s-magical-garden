@@ -1,0 +1,25 @@
+{
+  "status": "AWAITING_VISUAL_APPROVAL",
+  "approach": "Unified painted welcome scenes (single illustration) + matching animation sprite sheets. Not layered clip-art.",
+  "rejected": [
+    "cast-v2 sticker cast",
+    "storybook-v3 layered composites",
+    "02-character-layer-strip",
+    "R3/R4/R5",
+    "pink flower Play",
+    "heavy outlined title"
+  ],
+  "deliverables": [
+    "bunny-anim-sheet-v4.png",
+    "frog-anim-sheet-v4.png",
+    "V4-welcome-landscape-bunny-frog.png",
+    "V4-welcome-portrait-bunny-frog.png"
+  ],
+  "deferred": [
+    "butterfly",
+    "bird",
+    "puppy",
+    "other friends",
+    "full animation wiring"
+  ]
+}

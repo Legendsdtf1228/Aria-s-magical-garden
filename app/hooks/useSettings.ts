@@ -11,6 +11,7 @@ export const DEFAULT_SETTINGS: ParentSettings = {
   musicVolume: 0.55,
   enVoiceURI: null,
   esVoiceURI: null,
+  languageMode: "both",
 };
 
 function loadSettings(): ParentSettings {

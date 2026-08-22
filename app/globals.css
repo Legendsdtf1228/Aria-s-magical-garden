@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@import "./components/gardenAnimals.css";
+@import "./components/livingGarden.css";
+@import "./components/game/sceneKit.css";
+@import "./components/paintedGarden.css";
 
 :root {
   --ink: #3f3554;

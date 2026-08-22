@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityComplete } from "../components/ActivityComplete";
 import { ActivityShell } from "../components/ActivityShell";
-import { GardenStrip } from "../components/GardenStrip";
 import { SoftToast } from "../components/SoftToast";
 import { SHAPES } from "../data/catalog";
 import { friendById } from "../data/friends";
@@ -87,14 +86,14 @@ export function ShapeMeadowActivity(props: ActivityCommonProps) {
 
   if (complete) {
     return (
-      <ActivityShell activityId="shapes" stars={stars} starsNeeded={ROUNDS} collected={props.collected} busy speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch}>
-        <ActivityComplete titleEn="Your meadow is blooming!" titleEs="¡Qué lindo prado!" stars={stars} reward={lastReward} onAgain={() => { setOrder(shuffle(SHAPES)); setStars(0); setRound(0); setPlanted([]); props.voice.speak("Let's play again!", "¡Vamos a jugar otra vez!"); }} onHome={props.onHome} gardenStrip={<GardenStrip collected={props.collected} compact />} />
+      <ActivityShell activityId="shapes" stars={stars} starsNeeded={ROUNDS} collected={props.collected} busy speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onOpenSettings={props.onOpenSettings} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch}>
+        <ActivityComplete titleEn="Your meadow is blooming!" titleEs="¡Qué lindo prado!" stars={stars} reward={lastReward} onAgain={() => { setOrder(shuffle(SHAPES)); setStars(0); setRound(0); setPlanted([]); props.voice.speak("Let's play again!", "¡Vamos a jugar otra vez!"); }} onHome={props.onHome} />
       </ActivityShell>
     );
   }
 
   return (
-    <ActivityShell activityId="shapes" stars={stars} starsNeeded={ROUNDS} collected={props.collected} catchingId={catchingId} busy={busy} speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch} onRepeat={prompt}>
+    <ActivityShell activityId="shapes" stars={stars} starsNeeded={ROUNDS} collected={props.collected} catchingId={catchingId} busy={busy} speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onOpenSettings={props.onOpenSettings} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch} onRepeat={prompt}>
       <section className="prompt">
         <p>Match the shape • Une la forma</p>
         <button type="button" onClick={prompt} style={{ ["--target" as string]: "#9ad67a" }}>

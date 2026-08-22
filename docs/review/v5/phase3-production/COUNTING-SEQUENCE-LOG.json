@@ -1,0 +1,458 @@
+{
+  "capturedAt": "2026-08-22T21:22:01.815Z",
+  "baseUrl": "http://127.0.0.1:5173",
+  "uiLayout": {
+    "hasCountingV4": true,
+    "hasPondStage": true,
+    "hasNumberLilies": true,
+    "creamHints": false,
+    "paintedScene": true,
+    "likelyFullBleedPainted": true,
+    "likelyOldCardCream": false,
+    "rootClass": "counting-v4 ",
+    "notes": [
+      "counting-v4 present",
+      "pond-stage present"
+    ]
+  },
+  "rootCause": {
+    "summary": "First CountingPond round always uses pool = NUMBERS.filter(n => n.value <= 3) and target = pool[round % pool.length] with round=0, so value is 1. runCountSequence speaks only One then Uno, then askHowMany. Four/Cuatro appear only when stars>=2 (full NUMBERS) and round % 5 === 3.",
+    "codePath": [
+      "CountingPond.tsx: pool = stars < 2 ? NUMBERS.filter(value<=3) : NUMBERS",
+      "CountingPond.tsx: target = pool[round % pool.length]",
+      "SequenceController.runCountSequence: speak 0..count-1 EN then ES",
+      "AudioDirector.createSpeakOne -> speechSynthesis.speak"
+    ],
+    "firstRoundFrogCount": 1,
+    "fourRoundFrogCount": 4
+  },
+  "liveSpeechFromRunningApp": [
+    {
+      "t": 1787433719363,
+      "type": "speak",
+      "text": "One",
+      "lang": "en-US"
+    },
+    {
+      "t": 1787433719542,
+      "type": "speak",
+      "text": "Two",
+      "lang": "en-US"
+    },
+    {
+      "t": 1787433719709,
+      "type": "speak",
+      "text": "Three",
+      "lang": "en-US"
+    },
+    {
+      "t": 1787433719878,
+      "type": "speak",
+      "text": "Four",
+      "lang": "en-US"
+    },
+    {
+      "t": 1787433720048,
+      "type": "speak",
+      "text": "Uno",
+      "lang": "es-MX"
+    },
+    {
+      "t": 1787433720225,
+      "type": "speak",
+      "text": "Dos",
+      "lang": "es-MX"
+    },
+    {
+      "t": 1787433720403,
+      "type": "speak",
+      "text": "Tres",
+      "lang": "es-MX"
+    },
+    {
+      "t": 1787433720589,
+      "type": "speak",
+      "text": "Cuatro",
+      "lang": "es-MX"
+    },
+    {
+      "t": 1787433720805,
+      "type": "speak",
+      "text": "How many frogs?",
+      "lang": "en-US"
+    }
+  ],
+  "firstRoundLiveTexts": [
+    "One",
+    "Uno",
+    "How many frogs?"
+  ],
+  "fourRoundLiveTexts": [
+    "One",
+    "Two",
+    "Three",
+    "Four",
+    "Uno",
+    "Dos",
+    "Tres",
+    "Cuatro",
+    "How many frogs?"
+  ],
+  "liveTexts": [
+    "One",
+    "Two",
+    "Three",
+    "Four",
+    "Uno",
+    "Dos",
+    "Tres",
+    "Cuatro",
+    "How many frogs?"
+  ],
+  "frameEventLog": [
+    {
+      "frame": 1,
+      "file": "counting-seq-01.png",
+      "label": "after-first-sequence",
+      "frogCount": 1,
+      "lastSpeak": "How many frogs?",
+      "t": 1787433707745
+    },
+    {
+      "frame": 2,
+      "file": "counting-seq-02.png",
+      "label": "pre-pick-round-0",
+      "frogCount": 1,
+      "lastSpeak": "How many frogs?",
+      "t": 1787433708361
+    },
+    {
+      "frame": 3,
+      "file": "counting-seq-03.png",
+      "label": "post-pick-round-0",
+      "frogCount": 2,
+      "lastSpeak": "How many frogs?",
+      "t": 1787433711296
+    },
+    {
+      "frame": 4,
+      "file": "counting-seq-04.png",
+      "label": "pre-pick-round-1",
+      "frogCount": 2,
+      "lastSpeak": "How many frogs?",
+      "t": 1787433711896
+    },
+    {
+      "frame": 5,
+      "file": "counting-seq-05.png",
+      "label": "post-pick-round-1",
+      "frogCount": 3,
+      "lastSpeak": "How many frogs?",
+      "t": 1787433715111
+    },
+    {
+      "frame": 6,
+      "file": "counting-seq-06.png",
+      "label": "pre-pick-round-2",
+      "frogCount": 3,
+      "lastSpeak": "How many frogs?",
+      "t": 1787433715710
+    },
+    {
+      "frame": 7,
+      "file": "counting-seq-07.png",
+      "label": "post-pick-round-2",
+      "frogCount": 4,
+      "lastSpeak": "How many frogs?",
+      "t": 1787433719361
+    },
+    {
+      "frame": 8,
+      "file": "counting-seq-08.png",
+      "label": "during-four-count",
+      "frogCount": 4,
+      "lastSpeak": "One",
+      "t": 1787433719443
+    }
+  ],
+  "rawFrameEvents": [
+    {
+      "t": 1787433705893,
+      "kind": "speak",
+      "text": "One"
+    },
+    {
+      "t": 1787433706072,
+      "kind": "speak",
+      "text": "Uno"
+    },
+    {
+      "t": 1787433706291,
+      "kind": "speak",
+      "text": "How many frogs?"
+    },
+    {
+      "kind": "screenshot",
+      "frame": 1,
+      "file": "counting-seq-01.png",
+      "label": "after-first-sequence",
+      "frogCount": 1,
+      "lastSpeak": "How many frogs?",
+      "t": 1787433707745
+    },
+    {
+      "kind": "screenshot",
+      "frame": 2,
+      "file": "counting-seq-02.png",
+      "label": "pre-pick-round-0",
+      "frogCount": 1,
+      "lastSpeak": "How many frogs?",
+      "t": 1787433708361
+    },
+    {
+      "t": 1787433708439,
+      "kind": "speak",
+      "text": "One frogs!"
+    },
+    {
+      "t": 1787433709820,
+      "kind": "speak",
+      "text": "One"
+    },
+    {
+      "t": 1787433709993,
+      "kind": "speak",
+      "text": "Two"
+    },
+    {
+      "t": 1787433710160,
+      "kind": "speak",
+      "text": "Uno"
+    },
+    {
+      "t": 1787433710334,
+      "kind": "speak",
+      "text": "Dos"
+    },
+    {
+      "t": 1787433710542,
+      "kind": "speak",
+      "text": "How many frogs?"
+    },
+    {
+      "kind": "screenshot",
+      "frame": 3,
+      "file": "counting-seq-03.png",
+      "label": "post-pick-round-0",
+      "frogCount": 2,
+      "lastSpeak": "How many frogs?",
+      "t": 1787433711296
+    },
+    {
+      "kind": "screenshot",
+      "frame": 4,
+      "file": "counting-seq-04.png",
+      "label": "pre-pick-round-1",
+      "frogCount": 2,
+      "lastSpeak": "How many frogs?",
+      "t": 1787433711896
+    },
+    {
+      "t": 1787433711929,
+      "kind": "speak",
+      "text": "Two frogs!"
+    },
+    {
+      "t": 1787433713312,
+      "kind": "speak",
+      "text": "One"
+    },
+    {
+      "t": 1787433713492,
+      "kind": "speak",
+      "text": "Two"
+    },
+    {
+      "t": 1787433713662,
+      "kind": "speak",
+      "text": "Three"
+    },
+    {
+      "t": 1787433713825,
+      "kind": "speak",
+      "text": "Uno"
+    },
+    {
+      "t": 1787433714001,
+      "kind": "speak",
+      "text": "Dos"
+    },
+    {
+      "t": 1787433714176,
+      "kind": "speak",
+      "text": "Tres"
+    },
+    {
+      "t": 1787433714385,
+      "kind": "speak",
+      "text": "How many frogs?"
+    },
+    {
+      "kind": "screenshot",
+      "frame": 5,
+      "file": "counting-seq-05.png",
+      "label": "post-pick-round-1",
+      "frogCount": 3,
+      "lastSpeak": "How many frogs?",
+      "t": 1787433715111
+    },
+    {
+      "kind": "screenshot",
+      "frame": 6,
+      "file": "counting-seq-06.png",
+      "label": "pre-pick-round-2",
+      "frogCount": 3,
+      "lastSpeak": "How many frogs?",
+      "t": 1787433715710
+    },
+    {
+      "t": 1787433715743,
+      "kind": "speak",
+      "text": "Three frogs!"
+    },
+    {
+      "t": 1787433717122,
+      "kind": "speak",
+      "text": "One"
+    },
+    {
+      "t": 1787433717302,
+      "kind": "speak",
+      "text": "Two"
+    },
+    {
+      "t": 1787433717486,
+      "kind": "speak",
+      "text": "Three"
+    },
+    {
+      "t": 1787433717661,
+      "kind": "speak",
+      "text": "Four"
+    },
+    {
+      "t": 1787433717841,
+      "kind": "speak",
+      "text": "Uno"
+    },
+    {
+      "t": 1787433718009,
+      "kind": "speak",
+      "text": "Dos"
+    },
+    {
+      "t": 1787433718181,
+      "kind": "speak",
+      "text": "Tres"
+    },
+    {
+      "t": 1787433718360,
+      "kind": "speak",
+      "text": "Cuatro"
+    },
+    {
+      "t": 1787433718567,
+      "kind": "speak",
+      "text": "How many frogs?"
+    },
+    {
+      "kind": "screenshot",
+      "frame": 7,
+      "file": "counting-seq-07.png",
+      "label": "post-pick-round-2",
+      "frogCount": 4,
+      "lastSpeak": "How many frogs?",
+      "t": 1787433719361
+    },
+    {
+      "t": 1787433719363,
+      "kind": "speak",
+      "text": "One"
+    },
+    {
+      "kind": "screenshot",
+      "frame": 8,
+      "file": "counting-seq-08.png",
+      "label": "during-four-count",
+      "frogCount": 4,
+      "lastSpeak": "One",
+      "t": 1787433719443
+    },
+    {
+      "t": 1787433719542,
+      "kind": "speak",
+      "text": "Two"
+    },
+    {
+      "t": 1787433719709,
+      "kind": "speak",
+      "text": "Three"
+    },
+    {
+      "t": 1787433719878,
+      "kind": "speak",
+      "text": "Four"
+    },
+    {
+      "t": 1787433720048,
+      "kind": "speak",
+      "text": "Uno"
+    },
+    {
+      "t": 1787433720225,
+      "kind": "speak",
+      "text": "Dos"
+    },
+    {
+      "t": 1787433720403,
+      "kind": "speak",
+      "text": "Tres"
+    },
+    {
+      "t": 1787433720589,
+      "kind": "speak",
+      "text": "Cuatro"
+    },
+    {
+      "t": 1787433720805,
+      "kind": "speak",
+      "text": "How many frogs?"
+    }
+  ],
+  "countingSeqFrames": [
+    "counting-seq-01.png",
+    "counting-seq-02.png",
+    "counting-seq-03.png",
+    "counting-seq-04.png",
+    "counting-seq-05.png",
+    "counting-seq-06.png",
+    "counting-seq-07.png",
+    "counting-seq-08.png"
+  ],
+  "verdict": {
+    "fourAppears": true,
+    "cuatroAppears": true,
+    "firstRoundOnlyOneUnoAsk": true,
+    "liveTexts": [
+      "One",
+      "Two",
+      "Three",
+      "Four",
+      "Uno",
+      "Dos",
+      "Tres",
+      "Cuatro",
+      "How many frogs?"
+    ]
+  }
+}

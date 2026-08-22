@@ -10,7 +10,8 @@ type Props = {
   reward?: RewardResult | null;
   onAgain: () => void;
   onHome: () => void;
-  gardenStrip: ReactNode;
+  /** @deprecated Friends now live in the scenery */
+  gardenStrip?: ReactNode;
 };
 
 export function ActivityComplete({
@@ -20,24 +21,27 @@ export function ActivityComplete({
   reward,
   onAgain,
   onHome,
-  gardenStrip,
 }: Props) {
   return (
-    <section className="card complete-card">
+    <section className="complete-banner" role="status">
       <div className="confetti" aria-hidden>
         ⭐ 🌈 ⭐
       </div>
-      <p className="eyebrow">{titleEn}</p>
-      <h1>
+      <h2>
         Great job,<br />
         <span>Aria!</span>
-      </h1>
-      <p className="intro">
-        {titleEs} You earned {stars} stars
-        {reward?.kind === "friend" ? ` and a new friend!` : ""}.
+      </h2>
+      <p>
+        {titleEn}
+        <br />
+        <small>{titleEs}</small>
       </p>
       <div className="bigstars">{"★".repeat(Math.min(stars, 8))}</div>
-      {gardenStrip}
+      {reward?.kind === "friend" && (
+        <p className="new-friend-note">
+          {reward.en} • {reward.es}
+        </p>
+      )}
       <div className="finish-actions">
         <button type="button" className="play" onClick={onAgain}>
           Again • Otra vez

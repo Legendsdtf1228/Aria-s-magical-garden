@@ -1,0 +1,57 @@
+{
+  "source": "Playwright screenshots of running Vite app (?review=) with real React components + painted-garden-v1 assets",
+  "packPath": "docs/review/v5/phase3-production/",
+  "viewports": [
+    { "name": "landscape-1440x900", "width": 1440, "height": 900 },
+    { "name": "portrait-390x844", "width": 390, "height": 844 }
+  ],
+  "screens": [
+    "01-welcome",
+    "02-garden-map",
+    "03-find-friend",
+    "04-color-garden",
+    "05-counting-pond"
+  ],
+  "strips": [
+    "strip-bunny-crouch-hop-land.png",
+    "strip-frog-rest-hop-ripple.png"
+  ],
+  "countingSequenceFrames": [
+    "counting-seq-01.png",
+    "counting-seq-02.png",
+    "counting-seq-03.png",
+    "counting-seq-04.png",
+    "counting-seq-05.png",
+    "counting-seq-06.png",
+    "counting-seq-07.png",
+    "counting-seq-08.png"
+  ],
+  "countingAudio": {
+    "firstRoundNaturalLoad": "One → Uno → How many frogs? (target value is 1 on round 0)",
+    "completeThroughFourLive": ["One", "Two", "Three", "Four", "Uno", "Dos", "Tres", "Cuatro", "How many frogs?"],
+    "speaksEveryNumberThroughFour": true,
+    "doesNotStopAfterTwo": true,
+    "note": "Verified by advancing to a 4-frog round and stubbing TTS so every speechSynthesis.speak call was logged from the running app."
+  },
+  "placeholdersStillVisible": [
+    "Feed / Sounds / Shapes / Care / Free Play / Music deferred — not in this pack",
+    "Find My Friend and Color Garden reuse the garden-map environment WebP (no dedicated activity murals)",
+    "Color choices are CSS painted-color-object tiles, not unique illustrated prop WebPs",
+    "Counting number answers are CSS number-lily buttons under an embedded SceneBackground frame (not full-bleed garden map style)",
+    "Bunny/frog frame strips are exported from anim sheets (same production art), not live in-scene hop capture"
+  ],
+  "exactKnownVisualDefects": [
+    "Counting Pond is still a cream page with a centered pond window + white SpokenPrompt bubble + bottom number buttons — not a full-bleed painted garden scene like Welcome/Map",
+    "Counting Pond screenshots / sequence frames show lily pads but frogs are not visibly rendered on pads (CharacterSprite frogs missing or invisible in capture)",
+    "Color Garden uses three large labeled color tiles floating over the map — not painted environmental choices baked into the scene",
+    "Find My Friend landscape often shows four animals (not strictly three large answer animals)",
+    "Find My Friend portrait: Replay control text cropped to 'Repla'; character sprites appear sliced/glitched on narrow viewport",
+    "Color Garden portrait: Replay text cropped; flower parent control crowded against Replay",
+    "Garden Map portrait: large prev/next chevrons overlap characters (cat under left chevron); one bird sprite appears vertically cropped",
+    "Welcome landscape: puppy placement can read as sitting in/on water rather than bank/blanket",
+    "Welcome/Map character density risks decorative animals resembling Find-My-Friend answers when that activity reuses the same map mural",
+    "Automation DOM checks reported zero flat-hills / emoji / SVG / hotspot markers; visual judgment still required vs approved unified V4 painted baseline"
+  ],
+  "hotspotDebug": false,
+  "stoppedFor": "visual approval — no Sounds/Feed/Shapes/Care/FreePlay/Music work started"
+}

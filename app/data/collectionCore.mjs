@@ -19,7 +19,7 @@ export const FRIEND_META = {
   bird: { en: "Bird", es: "Pajarito", emoji: "🐦" },
   ladybug: { en: "Ladybug", es: "Mariquita", emoji: "🐞" },
   bee: { en: "Bee", es: "Abejita", emoji: "🐝" },
-  frog: { en: "Frog", es: "Ranita", emoji: "🐸" },
+  frog: { en: "Frog", es: "Rana", emoji: "🐸" },
   cat: { en: "Cat", es: "Gatito", emoji: "🐱" },
   puppy: { en: "Puppy", es: "Perrito", emoji: "🐶" },
 };

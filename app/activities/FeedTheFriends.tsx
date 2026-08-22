@@ -1,95 +1,109 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityComplete } from "../components/ActivityComplete";
 import { ActivityShell } from "../components/ActivityShell";
-import { GardenStrip } from "../components/GardenStrip";
+import { GardenAnimal } from "../components/GardenAnimal";
 import { SoftToast } from "../components/SoftToast";
-import { FEED_PAIRS } from "../data/catalog";
+import { GARDEN_ANIMALS, type AnimalPose, type GardenAnimalId } from "../data/gardenAnimals";
 import { friendById } from "../data/friends";
 import { shuffle, type RewardResult } from "../data/collection";
-import type { FeedPair } from "../types/game";
 import type { ActivityCommonProps } from "./types";
 
 const ROUNDS = 6;
 
+const FOOD_EMOJI: Record<string, string> = {
+  carrot: "🥕",
+  bone: "🦴",
+  fish: "🐟",
+  seeds: "🌾",
+  fly: "🪰",
+  flower: "🌼",
+  berry: "🫐",
+  leaf: "🍃",
+};
+
 export function FeedTheFriendsActivity(props: ActivityCommonProps) {
   const [round, setRound] = useState(0);
   const [stars, setStars] = useState(0);
-  const [order, setOrder] = useState(() => shuffle(FEED_PAIRS));
-  const [foods, setFoods] = useState<FeedPair["food"][]>([]);
-  const [pickedFood, setPickedFood] = useState<string | null>(null);
-  const [eating, setEating] = useState(false);
+  const [order, setOrder] = useState(() => shuffle(GARDEN_ANIMALS));
+  const [stageAnimals, setStageAnimals] = useState(GARDEN_ANIMALS.slice(0, 2));
+  const [foods, setFoods] = useState(GARDEN_ANIMALS.slice(0, 3).map((a) => a.food));
+  const [poses, setPoses] = useState<Partial<Record<GardenAnimalId, AnimalPose>>>({});
+  const [bounceFood, setBounceFood] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [wiggle, setWiggle] = useState<string | null>(null);
-  const [toast, setToast] = useState<{ emoji: string; title: string } | null>(null);
+  const [toast, setToast] = useState<{ title: string } | null>(null);
   const [catchingId, setCatchingId] = useState<string | null>(null);
   const [lastReward, setLastReward] = useState<RewardResult | null>(null);
+  const [overId, setOverId] = useState<string | null>(null);
   const lock = useRef(false);
   const target = order[round % order.length];
   const complete = stars >= ROUNDS;
 
   const prompt = useCallback(() => {
     props.voice.speak(
-      `Feed the ${target.animal.en.toLowerCase()}.`,
-      `Alimenta al ${target.animal.es.toLowerCase()}.`,
+      `Can you feed the ${target.en.toLowerCase()}?`,
+      `¿Puedes alimentar al ${target.es.toLowerCase()}?`,
+      "feedFriend",
     );
   }, [props.voice, target]);
 
   useEffect(() => {
     if (complete) return;
-    const wrong = shuffle(FEED_PAIRS.filter((p) => p.id !== target.id))
+    const others = shuffle(GARDEN_ANIMALS.filter((a) => a.id !== target.id)).slice(0, 1);
+    const onStage = shuffle([target, ...others]);
+    setStageAnimals(onStage);
+    const wrongFoods = shuffle(GARDEN_ANIMALS.filter((a) => a.id !== target.id))
       .slice(0, 2)
-      .map((p) => p.food);
-    setFoods(shuffle([target.food, ...wrong]));
-    setPickedFood(null);
-    setEating(false);
+      .map((a) => a.food);
+    setFoods(shuffle([target.food, ...wrongFoods]));
+    setPoses({});
     lock.current = false;
-    const t = setTimeout(prompt, 350);
+    const t = setTimeout(prompt, 400);
     return () => clearTimeout(t);
   }, [round, target, complete]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const tryFeed = (foodEn: string) => {
+  const tryFeed = (animalId: GardenAnimalId, foodKind: string) => {
     if (busy || complete || lock.current) return;
     props.audio.ensure();
     props.audio.tap();
-    setPickedFood(foodEn);
-    const food = foods.find((f) => f.en === foodEn);
-    if (food) props.voice.speak(food.en, food.es);
-    if (foodEn !== target.food.en) {
-      setWiggle(foodEn);
+    const animal = GARDEN_ANIMALS.find((a) => a.id === animalId)!;
+    if (animalId !== target.id || foodKind !== target.food.kind) {
+      setBounceFood(foodKind);
       props.audio.retry();
-      setTimeout(() => {
-        props.voice.speak("Let's try another one.", "Intentemos otra vez.");
-        setWiggle(null);
-        setPickedFood(null);
-      }, 700);
+      props.voice.speak("Let's try another one.", "Intentemos otra vez.", "tryAgain");
+      setTimeout(() => setBounceFood(null), 550);
       return;
     }
     lock.current = true;
     setBusy(true);
-    setEating(true);
+    setPoses({ [animalId]: "eat" });
+    props.voice.speak(
+      `Yum! The ${animal.en} loves ${animal.food.en}.`,
+      `¡Ñam! Al ${animal.es} le encanta.`,
+    );
     const reward = props.onAward();
     setLastReward(reward);
-    setToast({
-      emoji: target.animal.emoji,
-      title: `Yum! ${target.food.en} • ${target.food.es}`,
-    });
-    props.voice.speak(`Yum! The ${target.animal.en} loves ${target.food.en}.`, `¡Ñam! Al ${target.animal.es} le encanta.`);
+    setToast({ title: `${animal.en} • ${animal.food.en}` });
     if (reward.kind === "friend") {
       setCatchingId(reward.id);
       props.audio.sparkle();
     } else props.audio.correct();
     setTimeout(() => {
+      setPoses({ [animalId]: "celebrate" });
+    }, 700);
+    setTimeout(() => {
       setBusy(false);
-      setEating(false);
       setToast(null);
       setCatchingId(null);
       setStars((s) => s + 1);
       setRound((r) => r + 1);
       lock.current = false;
-    }, 2000);
+      if (stars + 1 >= ROUNDS) props.onActivityComplete?.("feed");
+    }, 1900);
   };
+
+  const foodList = useMemo(() => foods, [foods]);
 
   const onCatch = (id: Parameters<typeof props.onCatchFriend>[0]) => {
     if (!props.onCatchFriend(id)) return;
@@ -102,50 +116,64 @@ export function FeedTheFriendsActivity(props: ActivityCommonProps) {
 
   if (complete) {
     return (
-      <ActivityShell activityId="feed" stars={stars} starsNeeded={ROUNDS} collected={props.collected} busy speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch}>
-        <ActivityComplete titleEn="Everyone is happily fed!" titleEs="¡Todos están felices!" stars={stars} reward={lastReward} onAgain={() => { setOrder(shuffle(FEED_PAIRS)); setStars(0); setRound(0); props.voice.speak("Let's play again!", "¡Vamos a jugar otra vez!"); }} onHome={props.onHome} gardenStrip={<GardenStrip collected={props.collected} compact />} />
+      <ActivityShell activityId="feed" stars={stars} starsNeeded={ROUNDS} collected={props.collected} busy speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onOpenSettings={props.onOpenSettings} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch}>
+        <ActivityComplete titleEn="Everyone is happily fed!" titleEs="¡Todos están felices!" stars={stars} reward={lastReward} onAgain={() => { setOrder(shuffle(GARDEN_ANIMALS)); setStars(0); setRound(0); props.voice.speak("Want to play again?", "¿Quieres jugar otra vez?", "playAgain"); }} onHome={props.onHome} />
       </ActivityShell>
     );
   }
 
   return (
-    <ActivityShell activityId="feed" stars={stars} starsNeeded={ROUNDS} collected={props.collected} catchingId={catchingId} busy={busy} speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch} onRepeat={prompt}>
+    <ActivityShell activityId="feed" stars={stars} starsNeeded={ROUNDS} collected={props.collected} catchingId={catchingId} busy={busy} speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onOpenSettings={props.onOpenSettings} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch} onRepeat={prompt}>
       <section className="prompt">
-        <p>Feed the friend • Alimenta al amigo</p>
+        <p>Feed the friends • Alimenta a los amigos</p>
         <button type="button" onClick={prompt} style={{ ["--target" as string]: "#ffb347" }}>
-          <span>{target.animal.en}</span><b>•</b><span>{target.animal.es}</span>
+          <span>{target.en}</span><b>•</b><span>{target.es}</span>
         </button>
       </section>
-      <section className="playarea">
-        <button
-          type="button"
-          className={`feed-animal ${eating ? "eating" : ""}`}
-          onClick={() => props.voice.speak(target.animal.en, target.animal.es)}
-          aria-label={`${target.animal.en}, ${target.animal.es}`}
-        >
-          <span className="big-emoji">{target.animal.emoji}</span>
-          {eating && <span className="yum">😋</span>}
-        </button>
-        <p>Tap the food, then feed! · ¡Toca la comida!</p>
+      <section className="feed-stage" aria-label="Hungry friends">
+        {stageAnimals.map((a) => (
+          <div
+            key={a.id}
+            className={`feed-drop ${overId === a.id ? "over" : ""}`}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setOverId(a.id);
+            }}
+            onDragLeave={() => setOverId(null)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setOverId(null);
+              const kind = e.dataTransfer.getData("food");
+              if (kind) tryFeed(a.id, kind);
+            }}
+          >
+            <GardenAnimal id={a.id} pose={poses[a.id] || "idle"} size={110} />
+            <strong>{a.en}</strong>
+            <small>{a.es}</small>
+          </div>
+        ))}
       </section>
-      <section className="choice-row" aria-label="Food">
-        {foods.map((f) => (
+      <section className="food-tray" aria-label="Food">
+        {foodList.map((f) => (
           <button
-            key={f.en}
+            key={f.kind + f.en}
             type="button"
-            className={`big-choice ${pickedFood === f.en ? "selected" : ""} ${wiggle === f.en ? "wiggle" : ""}`}
+            className={`food-token ${bounceFood === f.kind ? "bounce-back" : ""}`}
             draggable
-            onDragStart={(e) => e.dataTransfer.setData("food", f.en)}
-            onClick={() => tryFeed(f.en)}
+            onDragStart={(e) => e.dataTransfer.setData("food", f.kind)}
+            onClick={() => {
+              // Tap fallback: feed the target animal if this is the correct food
+              tryFeed(target.id, f.kind);
+            }}
             aria-label={`${f.en}, ${f.es}`}
           >
-            <span className="big-emoji">{f.emoji}</span>
+            <span className="food-art">{FOOD_EMOJI[f.kind] || "🍽️"}</span>
             <strong>{f.en}</strong>
             <small>{f.es}</small>
           </button>
         ))}
       </section>
-      <SoftToast show={!!toast} emoji={toast?.emoji} title={toast?.title ?? ""} variant="friend" />
+      <SoftToast show={!!toast} title={toast?.title ?? ""} variant="friend" />
     </ActivityShell>
   );
 }

@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityComplete } from "../components/ActivityComplete";
 import { ActivityShell } from "../components/ActivityShell";
-import { GardenStrip } from "../components/GardenStrip";
 import { SoftToast } from "../components/SoftToast";
 import { COLORS } from "../data/catalog";
 import { friendById } from "../data/friends";
@@ -13,6 +12,7 @@ import type { ColorItem } from "../types/game";
 import type { ActivityCommonProps } from "./types";
 
 const ROUNDS = 6;
+const CELEBRATE_MS = 900;
 
 const FIND_KEY: Record<string, string> = {
   red: "findRed",
@@ -27,17 +27,36 @@ const FIND_KEY: Record<string, string> = {
   white: "findWhite",
 };
 
+/** Familiar colored garden objects — no tiny unrelated emoji. */
+const COLOR_OBJECT: Record<string, { kind: string; label: string }> = {
+  red: { kind: "pot", label: "Flower pot" },
+  blue: { kind: "can", label: "Watering can" },
+  yellow: { kind: "puddle", label: "Paint puddle" },
+  green: { kind: "bed", label: "Flower bed" },
+  purple: { kind: "pot", label: "Flower pot" },
+  orange: { kind: "can", label: "Watering can" },
+  pink: { kind: "bed", label: "Flower bed" },
+  brown: { kind: "pot", label: "Flower pot" },
+  black: { kind: "puddle", label: "Paint puddle" },
+  white: { kind: "can", label: "Watering can" },
+};
+
 export function ColorGardenActivity(props: ActivityCommonProps) {
   const [round, setRound] = useState(0);
   const [stars, setStars] = useState(0);
   const [order, setOrder] = useState(() => shuffle(COLORS));
   const [choices, setChoices] = useState<ColorItem[]>([]);
-  const [selected, setSelected] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [hopTo, setHopTo] = useState<string | null>(null);
   const [wiggleId, setWiggleId] = useState<string | null>(null);
-  const [toast, setToast] = useState<{ emoji: string; title: string; subtitle?: string; variant: "friend" | "sparkle" | "color" } | null>(null);
+  const [toast, setToast] = useState<{
+    title: string;
+    subtitle?: string;
+    variant: "friend" | "sparkle" | "color";
+  } | null>(null);
   const [catchingId, setCatchingId] = useState<string | null>(null);
   const [lastReward, setLastReward] = useState<RewardResult | null>(null);
+  const [sparkleBurst, setSparkleBurst] = useState(false);
   const lock = useRef(false);
   const target = order[round % order.length];
   const complete = stars >= ROUNDS;
@@ -45,8 +64,8 @@ export function ColorGardenActivity(props: ActivityCommonProps) {
   const prompt = useCallback(() => {
     const key = FIND_KEY[target.id] ?? "findColor";
     props.voice.speak(
-      `Can you find the ${target.en.toLowerCase()} basket?`,
-      `¿Puedes encontrar la canasta ${target.es.toLowerCase()}?`,
+      `Find ${target.en}.`,
+      `Encuentra ${target.es}.`,
       key,
     );
   }, [props.voice, target]);
@@ -54,7 +73,8 @@ export function ColorGardenActivity(props: ActivityCommonProps) {
   useEffect(() => {
     if (complete) return;
     setChoices(pickChoices(COLORS, target, 3));
-    setSelected(false);
+    setHopTo(null);
+    setSparkleBurst(false);
     lock.current = false;
     const t = setTimeout(prompt, 350);
     return () => clearTimeout(t);
@@ -63,33 +83,30 @@ export function ColorGardenActivity(props: ActivityCommonProps) {
   const finishRound = (reward: RewardResult) => {
     setBusy(true);
     setLastReward(reward);
+    setSparkleBurst(true);
     setToast({
-      emoji: reward.emoji,
-      title: reward.kind === "friend" ? `${reward.en} • ${reward.es}` : reward.en,
-      subtitle: reward.kind === "friend" ? "New friend!" : reward.es,
-      variant: reward.kind === "friend" ? "friend" : "sparkle",
+      title: reward.kind === "friend" ? `${reward.en} • ${reward.es}` : `${target.en} • ${target.es}`,
+      subtitle: reward.kind === "friend" ? "New friend!" : undefined,
+      variant: reward.kind === "friend" ? "friend" : "color",
     });
     if (reward.kind === "friend") {
       setCatchingId(reward.id);
-      props.voice.speak(`Great job! ${target.en}. A new friend! ${reward.en}.`, `${target.es}. ${reward.es}.`);
+      props.voice.speak(`Great job! ${target.en}.`, `${target.es}. ¡${reward.es}!`);
       props.audio.sparkle();
     } else {
-      props.voice.speak(`Great job! ${target.en}.`, `${target.es}. ${reward.es}`);
+      props.voice.speak(`Great job! ${target.en}.`, `¡Muy bien! ${target.es}.`);
       props.audio.correct();
-      setToast({
-        emoji: target.emoji,
-        title: `${target.en} • ${target.es}`,
-        variant: "color",
-      });
     }
     setTimeout(() => {
       setBusy(false);
       setToast(null);
       setCatchingId(null);
+      setHopTo(null);
+      setSparkleBurst(false);
       setStars((s) => s + 1);
       setRound((r) => r + 1);
       lock.current = false;
-    }, 1900);
+    }, CELEBRATE_MS);
   };
 
   const match = (c: ColorItem) => {
@@ -99,14 +116,14 @@ export function ColorGardenActivity(props: ActivityCommonProps) {
     if (c.id !== target.id) {
       setWiggleId(c.id);
       props.audio.retry();
-      props.voice.speak("Let's try another one.", "Intentemos otra vez.", "tryAgain");
+      props.voice.speak("Try another one.", "Intenta otra.", "tryAgain");
       setTimeout(() => setWiggleId(null), 500);
       return;
     }
     lock.current = true;
-    setSelected(false);
+    setHopTo(c.id);
     const reward = props.onAward();
-    finishRound(reward);
+    setTimeout(() => finishRound(reward), 280);
   };
 
   const onCatch = (id: Parameters<typeof props.onCatchFriend>[0]) => {
@@ -118,6 +135,29 @@ export function ColorGardenActivity(props: ActivityCommonProps) {
     setTimeout(() => setCatchingId(null), 1200);
   };
 
+  const hearFriend = (id: Parameters<typeof props.onCatchFriend>[0]) => {
+    const f = friendById(id);
+    if (!f) return;
+    props.audio.animal(
+      f.id === "butterfly"
+        ? "flutter"
+        : f.id === "bunny"
+          ? "hop"
+          : f.id === "ladybug"
+            ? "crawl"
+            : f.id === "bee"
+              ? "buzz"
+              : f.id === "frog"
+                ? "ribbit"
+                : f.id === "cat"
+                  ? "meow"
+                  : f.id === "puppy"
+                    ? "bark"
+                    : "chirp",
+    );
+    props.voice.speak(`${f.en}.`, `${f.es}.`);
+  };
+
   if (complete) {
     return (
       <ActivityShell
@@ -127,9 +167,10 @@ export function ColorGardenActivity(props: ActivityCommonProps) {
         collected={props.collected}
         busy
         speechOn={props.speechOn}
-        onToggleSpeech={props.onToggleSpeech}
+        onToggleSpeech={props.onToggleSpeech} onOpenSettings={props.onOpenSettings}
         onHomeRequest={props.onHomeRequest}
         onCatchFriend={onCatch}
+        onHearFriend={hearFriend}
       >
         <ActivityComplete
           titleEn="You matched so many colors!"
@@ -143,7 +184,6 @@ export function ColorGardenActivity(props: ActivityCommonProps) {
             props.voice.speak("Let's play again!", "¡Vamos a jugar otra vez!");
           }}
           onHome={props.onHome}
-          gardenStrip={<GardenStrip collected={props.collected} compact />}
         />
       </ActivityShell>
     );
@@ -159,73 +199,43 @@ export function ColorGardenActivity(props: ActivityCommonProps) {
       busy={busy}
       speechOn={props.speechOn}
       onToggleSpeech={props.onToggleSpeech}
+      onOpenSettings={props.onOpenSettings}
       onHomeRequest={props.onHomeRequest}
       onCatchFriend={onCatch}
+      onHearFriend={hearFriend}
       onRepeat={prompt}
     >
-      <section className="prompt">
-        <p>Match the color • Une el color</p>
-        <button type="button" onClick={prompt} style={{ ["--target" as string]: target.hex }}>
-          <span>{target.en}</span>
-          <b>•</b>
-          <span>{target.es}</span>
-        </button>
-      </section>
-      <section className="playarea">
-        <button
-          type="button"
-          className={`blob ${selected ? "selected" : ""} ${busy ? "bounce" : ""}`}
-          style={{ ["--friend" as string]: target.hex, ["--dark" as string]: target.dark }}
-          onClick={() => {
-            setSelected(true);
-            props.voice.speak(`${target.en}.`, `${target.es}.`);
-          }}
-          draggable
-          onDragStart={(e) => e.dataTransfer.setData("id", target.id)}
-          aria-label={`${target.en}, ${target.es}`}
-        >
-          <span className="eyes">
-            <i />
-            <i />
-          </span>
-          <span className="smile" />
-        </button>
-        <p>
-          {selected ? "Now choose its basket!" : "Tap me, then a basket!"}
-          <br />
-          <span>{selected ? "¡Ahora elige su canasta!" : "¡Tócame, luego una canasta!"}</span>
-        </p>
-      </section>
-      <section className="baskets" aria-label="Color choices">
-        {choices.map((c) => (
-          <button
-            key={c.id}
-            type="button"
-            className={`basket ${wiggleId === c.id ? "wiggle" : ""}`}
-            onClick={() => match(c)}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => {
-              e.preventDefault();
-              match(c);
-            }}
-            style={{ ["--basket" as string]: c.hex, ["--bdark" as string]: c.dark }}
-          >
-            <span className="handle" />
-            <span className="body">
-              <b>{c.emoji}</b>
-            </span>
-            <strong>{c.en}</strong>
-            <small>{c.es}</small>
-          </button>
-        ))}
-      </section>
-      <SoftToast
-        show={!!toast}
-        emoji={toast?.emoji}
-        title={toast?.title ?? ""}
-        subtitle={toast?.subtitle}
-        variant={toast?.variant}
-      />
+      <div className="color-stage painted-color-stage">
+        <div className="painted-prompt-sign" style={{ ["--target" as string]: target.hex }}>
+          <p className="painted-prompt-line">
+            Find {target.en} <span aria-hidden>•</span> {target.es}
+          </p>
+          <p className="painted-prompt-line es">Encuentra el {target.es}</p>
+        </div>
+
+        <section className="painted-color-choices" aria-label="Color choices">
+          {choices.map((c) => {
+            const obj = COLOR_OBJECT[c.id] || COLOR_OBJECT.red;
+            return (
+              <button
+                key={c.id}
+                type="button"
+                className={`painted-color-object kind-${obj.kind} ${wiggleId === c.id ? "is-wiggle" : ""} ${hopTo === c.id ? "is-correct" : ""}`}
+                onClick={() => match(c)}
+                style={{ ["--fill" as string]: c.hex, ["--shade" as string]: c.dark }}
+                aria-label={`${c.en}, ${c.es}`}
+              >
+                <span className="painted-color-shape" aria-hidden />
+                <strong>{c.en}</strong>
+                <small>{c.es}</small>
+              </button>
+            );
+          })}
+        </section>
+        {sparkleBurst && <div className="painted-petal-burst" aria-hidden />}
+      </div>
+
+      <SoftToast show={!!toast} title={toast?.title ?? ""} subtitle={toast?.subtitle} variant={toast?.variant} />
     </ActivityShell>
   );
 }

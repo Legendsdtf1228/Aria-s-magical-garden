@@ -49,7 +49,8 @@ export function ParentGateFlower({ onOpen, label = "Parent settings" }: Props) {
       onPointerCancel={clear}
       onContextMenu={(e) => e.preventDefault()}
     >
-      🌸
+      <span className="parent-flower-petals" aria-hidden />
+      <span className="parent-flower-center" aria-hidden />
     </button>
   );
 }

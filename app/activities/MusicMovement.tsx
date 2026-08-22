@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { ActivityComplete } from "../components/ActivityComplete";
 import { ActivityShell } from "../components/ActivityShell";
-import { GardenStrip } from "../components/GardenStrip";
 import { MOVEMENTS } from "../data/catalog";
 import { friendById } from "../data/friends";
 import { shuffle, type RewardResult } from "../data/collection";
@@ -74,14 +73,14 @@ export function MusicMovementActivity(props: ActivityCommonProps) {
 
   if (complete) {
     return (
-      <ActivityShell activityId="music" stars={stars} starsNeeded={ROUNDS} collected={props.collected} busy speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch}>
-        <ActivityComplete titleEn="What wonderful movers!" titleEs="¡Qué bien se mueven!" stars={stars} reward={lastReward} onAgain={() => { setOrder(shuffle(MOVEMENTS)); setStars(0); setRound(0); props.voice.speak("Let's play again!", "¡Vamos a jugar otra vez!"); }} onHome={props.onHome} gardenStrip={<GardenStrip collected={props.collected} compact />} />
+      <ActivityShell activityId="music" stars={stars} starsNeeded={ROUNDS} collected={props.collected} busy speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onOpenSettings={props.onOpenSettings} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch}>
+        <ActivityComplete titleEn="What wonderful movers!" titleEs="¡Qué bien se mueven!" stars={stars} reward={lastReward} onAgain={() => { setOrder(shuffle(MOVEMENTS)); setStars(0); setRound(0); props.voice.speak("Let's play again!", "¡Vamos a jugar otra vez!"); }} onHome={props.onHome} />
       </ActivityShell>
     );
   }
 
   return (
-    <ActivityShell activityId="music" stars={stars} starsNeeded={ROUNDS} collected={props.collected} catchingId={catchingId} busy={false} speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch} onRepeat={() => playMove(current)}>
+    <ActivityShell activityId="music" stars={stars} starsNeeded={ROUNDS} collected={props.collected} catchingId={catchingId} busy={false} speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onOpenSettings={props.onOpenSettings} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch} onRepeat={() => playMove(current)}>
       <section className="prompt">
         <p>Move with me • Muévete conmigo</p>
         <button type="button" onClick={() => playMove(current)} style={{ ["--target" as string]: "#c08aff" }}>

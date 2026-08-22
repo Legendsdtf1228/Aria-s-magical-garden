@@ -1,0 +1,44 @@
+{
+  "sprint": "Aria Magical Garden V5",
+  "status": "IN_PROGRESS — not complete",
+  "tests": "43 pass / 0 fail (unit)",
+  "build": "pass",
+  "pwaCache": "aria-garden-pwa-v5",
+  "characterSetVersion": "painted-garden-v1",
+  "completed": {
+    "phase1": [
+      "ActivityShell no longer mounts LivingFriends/FloatingFriends SVG",
+      "GardenScene uses painted WebP env — no flat hills / emoji bugs",
+      "GardenAnimal stub → CharacterSprite only",
+      "ColorGarden color-buddy + emoji bloom removed",
+      "FindMyFriend white cards removed — painted choices",
+      "CountingPond SVG friend layers removed",
+      "Parent gate emoji replaced with CSS flower",
+      "Regression tests in painted-garden-v5.test.mjs",
+      "Dead GardenStrip/MyGardenScreen quarantined"
+    ],
+    "phase2": [
+      "painted-garden-v1 cast (8 idle sprites + cast sheet)",
+      "Bunny/frog anim sheets installed",
+      "Welcome uses play-gate + storybook title + living bunny/frog + limited cast",
+      "Map uses painted-garden-v1 friends",
+      "Named friend routes retained"
+    ],
+    "phase3_partial": [
+      "Find My Friend painted rewrite",
+      "Color Garden painted choices rewrite",
+      "Counting Pond still uses SequenceController; frogs use CharacterSprite"
+    ]
+  },
+  "remaining": [
+    "Activity screenshots at 1440×900 and 390×844 for Map/Find/Color/Count/Feed/FreePlay",
+    "Full animal anim wiring (all frames)",
+    "Remaining activities full painted rebuild (Sounds, Feed, Shapes, Care, FreePlay, Music)",
+    "Human voice recording manifest completion",
+    "Multi-touch / viewport matrix QA",
+    "Asset budget report",
+    "Visual approval of cast vs approved bunny/frog baseline"
+  ],
+  "visualReviewPack": "docs/review/v5/",
+  "note": "Do not treat tests/build as visual approval."
+}

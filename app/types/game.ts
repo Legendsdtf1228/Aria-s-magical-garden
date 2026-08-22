@@ -11,7 +11,11 @@ export type ActivityId =
   | "shapes"
   | "counting"
   | "feed"
-  | "music";
+  | "music"
+  | "findFriend"
+  | "animalSounds"
+  | "gardenCare"
+  | "freePlay";
 
 export type FriendId =
   | "butterfly"
@@ -69,6 +73,8 @@ export type MovementItem = Bilingual & {
   cue: "clap" | "stomp" | "spin" | "jump" | "wiggle" | "freeze";
 };
 
+export type LanguageMode = "en" | "es" | "both";
+
 export type ParentSettings = {
   speechOn: boolean;
   musicOn: boolean;
@@ -76,7 +82,15 @@ export type ParentSettings = {
   musicVolume: number;
   enVoiceURI: string | null;
   esVoiceURI: string | null;
+  languageMode: LanguageMode;
+};
+
+export type GardenProgress = {
+  version: number;
+  completedActivities: ActivityId[];
+  surprises: string[];
 };
 
 export const FRIENDS_STORAGE_KEY = "aria-color-garden-friends";
 export const SETTINGS_STORAGE_KEY = "aria-color-garden-settings";
+export const PROGRESS_STORAGE_KEY = "aria-color-garden-progress";

@@ -56,6 +56,22 @@ export function ParentSettingsPanel({
           </p>
         </div>
 
+        <label className="setting-row stack">
+          <span>Spoken language</span>
+          <select
+            value={settings.languageMode ?? "both"}
+            onChange={(e) =>
+              onChange({
+                languageMode: e.target.value as "en" | "es" | "both",
+              })
+            }
+          >
+            <option value="both">English + Spanish</option>
+            <option value="en">English only</option>
+            <option value="es">Spanish only</option>
+          </select>
+        </label>
+
         <label className="setting-row">
           <span>Speech</span>
           <input

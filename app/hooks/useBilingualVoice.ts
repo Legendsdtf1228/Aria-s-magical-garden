@@ -25,6 +25,7 @@ type VoicePrefs = {
   speechVolume: number;
   enVoiceURI: string | null;
   esVoiceURI: string | null;
+  languageMode?: "en" | "es" | "both";
 };
 
 export { pickBestVoice, isNaturalVoice, VOICE_RATES, LANG_PAUSE_MS } from "../lib/voiceSelect";
@@ -289,9 +290,17 @@ export function useBilingualVoice(prefs: VoicePrefs) {
           : keys && typeof keys === "object"
             ? keys.en || keys.es
             : undefined;
+      const mode = prefsRef.current.languageMode ?? "both";
       const parts: SpeakPart[] = [];
-      if (en.trim()) parts.push({ text: en.trim(), lang: "en", phraseKey });
-      if (es?.trim()) parts.push({ text: es.trim(), lang: "es", phraseKey });
+      if (mode !== "es" && en.trim()) {
+        parts.push({ text: en.trim(), lang: "en", phraseKey });
+      }
+      if (mode !== "en" && es?.trim()) {
+        parts.push({ text: es.trim(), lang: "es", phraseKey });
+      }
+      // If parent chose one language but only the other text was provided, still speak that text
+      if (!parts.length && en.trim()) parts.push({ text: en.trim(), lang: "en", phraseKey });
+      if (!parts.length && es?.trim()) parts.push({ text: es.trim(), lang: "es", phraseKey });
       queueRef.current = parts;
       setTimeout(() => void speakNext(), 30);
     },

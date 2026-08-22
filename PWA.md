@@ -21,16 +21,35 @@ Aria's Color Garden can be installed on iPhone, iPad, Android, and Windows.
 
 Parent settings (hold the flower 2 seconds) also list these steps.
 
+## Play experience
+
+Navigation is a **full-screen living garden map** (no activity card grid):
+
+| Garden location | Activity |
+| --- | --- |
+| Rainbow flower patch | Color Garden |
+| Bunny picnic | Feed the Friends |
+| Animal meadow | Find My Friend |
+| Singing tree | Animal Sounds |
+| Watering garden | Garden Care |
+| Open meadow | Free Play |
+| Shape stepping stones | Shape Meadow |
+| Frog pond | Counting Pond |
+| Music gazebo | Music and Movement |
+| Woodland trail | Animal Friends |
+
+Collected friends live in the scenery (not an inventory strip). Parent settings: English / Spanish / English + Spanish, speech, music, voices.
+
 ## Offline play
 
-After the game loads once online, the service worker caches:
+After the game loads once online, the service worker (`aria-garden-pwa-v4`) caches:
 
 - Game interface / activities
 - Icons and images
 - Music / sound effect assets requested by the game
 - English and Spanish voice recordings under `/audio/voice/` when present
 
-Collection progress in `localStorage` (`aria-color-garden-friends`) is **never** cleared by app updates.
+Collection progress (`aria-color-garden-friends`) and activity progress (`aria-color-garden-progress`) are **never** cleared by app updates. Missing voice files fall back to device speech without crashing.
 
 ## Updates
 

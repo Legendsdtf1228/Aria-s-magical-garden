@@ -1,0 +1,274 @@
+/* Full-body garden animals — gentle picture-book motion */
+.garden-animal {
+  display: inline-grid;
+  place-items: center;
+  min-width: 72px;
+  min-height: 72px;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+.garden-animal svg {
+  overflow: visible;
+  filter: drop-shadow(0 4px 0 #00000014);
+}
+.animal-btn {
+  border: 0;
+  background: #fffffff0;
+  border-radius: 28px;
+  min-width: 96px;
+  min-height: 112px;
+  padding: 10px 8px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  box-shadow: 0 8px 0 #4b564920;
+  -webkit-user-drag: none;
+  touch-action: manipulation;
+}
+.animal-btn:active { transform: scale(0.96); }
+.animal-btn.selected { outline: 5px solid #ffd86b; }
+.animal-btn strong { font-size: 14px; color: #554860; }
+.animal-btn small { font-size: 12px; font-weight: 800; color: #85778c; }
+.animal-btn .garden-animal { pointer-events: none; }
+
+.pose-idle .parts { animation: animalBob 2.8s ease-in-out infinite; }
+.pose-move .parts { animation: animalBob 1.4s ease-in-out infinite; }
+.pose-tap .parts { animation: animalPop 0.45s ease; }
+.pose-celebrate .parts { animation: animalCelebrate 0.7s ease-in-out infinite; }
+.pose-eat .parts { animation: animalEat 0.55s ease-in-out infinite; }
+
+.animal-butterfly.pose-idle .wing-l,
+.animal-butterfly.pose-move .wing-l,
+.animal-bee.pose-idle .wing-l,
+.animal-bee.pose-move .wing-l { animation: wingFlapL 0.55s ease-in-out infinite; transform-origin: 60px 50px; }
+.animal-butterfly.pose-idle .wing-r,
+.animal-butterfly.pose-move .wing-r,
+.animal-bee.pose-idle .wing-r,
+.animal-bee.pose-move .wing-r { animation: wingFlapR 0.55s ease-in-out infinite; transform-origin: 60px 50px; }
+
+.animal-bunny.pose-move .ear,
+.animal-bunny.pose-celebrate .ear { animation: earWiggle 0.6s ease-in-out infinite; transform-origin: center bottom; }
+.animal-bunny.pose-move .parts { animation: hop 0.7s ease-in-out infinite; }
+
+.animal-bird.pose-move .wing { animation: wingFlapL 0.45s ease-in-out infinite; transform-origin: 58px 64px; }
+.animal-bird.pose-celebrate .parts { animation: animalCelebrate 0.65s ease-in-out infinite; }
+
+.animal-ladybug.pose-move .parts { animation: crawl 1.2s ease-in-out infinite; }
+.animal-frog.pose-move .parts,
+.animal-frog.pose-celebrate .parts { animation: hop 0.65s ease-in-out infinite; }
+.animal-cat.pose-move .tail,
+.animal-puppy.pose-move .tail,
+.animal-puppy.pose-celebrate .tail { animation: tailWag 0.5s ease-in-out infinite; transform-origin: 30px 70px; }
+.animal-puppy.pose-celebrate .prop-ball { opacity: 1; animation: ballBounce 0.6s ease-in-out infinite; }
+
+@keyframes animalBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes animalPop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+@keyframes animalCelebrate {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-10px) rotate(3deg); }
+}
+@keyframes animalEat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(3px) scale(1.04); }
+}
+@keyframes wingFlapL {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-16deg); }
+}
+@keyframes wingFlapR {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(16deg); }
+}
+@keyframes earWiggle {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(8deg); }
+}
+@keyframes hop {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-14px); }
+}
+@keyframes crawl {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
+}
+@keyframes tailWag {
+  0%, 100% { transform: rotate(-12deg); }
+  50% { transform: rotate(18deg); }
+}
+@keyframes ballBounce {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  50% { transform: translateY(-12px); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pose-idle .parts,
+  .pose-move .parts,
+  .pose-celebrate .parts,
+  .pose-eat .parts,
+  .wing-l, .wing-r, .ear, .tail, .wing {
+    animation: none !important;
+  }
+}
+
+/* Food tokens */
+.food-token {
+  border: 4px solid white;
+  border-radius: 22px;
+  min-width: 84px;
+  min-height: 84px;
+  background: #fff9ef;
+  box-shadow: 0 8px 0 #4b564920;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  font-weight: 900;
+  color: #554860;
+}
+.food-token:active { cursor: grabbing; }
+.food-token.bounce-back { animation: foodBounce 0.5s ease; }
+.food-art { font-size: 36px; line-height: 1; pointer-events: none; }
+.food-token small { font-size: 11px; color: #85778c; }
+
+@keyframes foodBounce {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+/* Free play / garden care */
+.free-garden {
+  position: relative;
+  width: min(720px, 100%);
+  min-height: 340px;
+  border-radius: 28px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #c8eefc 0%, #dff6b0 55%, #8fda7d 100%);
+  border: 5px solid white;
+  box-shadow: 0 10px 0 #4b564918;
+  margin: 8px 0 12px;
+}
+.free-garden .sky-tap,
+.free-garden .sun-tap,
+.free-garden .cloud-tap,
+.free-garden .flower-tap {
+  position: absolute;
+  border: 0;
+  background: transparent;
+  min-width: 72px;
+  min-height: 72px;
+  font-size: 36px;
+  cursor: pointer;
+  z-index: 2;
+}
+.free-garden .sun-tap { top: 8px; right: 12px; }
+.free-garden .cloud-tap { top: 18px; left: 18px; }
+.free-garden .flower-tap { bottom: 18px; }
+.free-garden .flower-tap.f1 { left: 12%; }
+.free-garden .flower-tap.f2 { left: 42%; }
+.free-garden .flower-tap.f3 { left: 72%; }
+.roaming-friend {
+  position: absolute;
+  z-index: 3;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  min-width: 88px;
+  min-height: 88px;
+  cursor: pointer;
+}
+.care-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  width: min(720px, 100%);
+}
+.care-tool {
+  border: 4px solid white;
+  border-radius: 22px;
+  min-width: 100px;
+  min-height: 100px;
+  background: #fffffff0;
+  box-shadow: 0 8px 0 #4b564918;
+  font-size: 40px;
+  cursor: grab;
+}
+.care-plot {
+  width: min(280px, 90%);
+  min-height: 160px;
+  border-radius: 24px;
+  background: #c8e8a0;
+  border: 5px dashed #7aa84a;
+  display: grid;
+  place-items: center;
+  font-size: 48px;
+  margin: 12px auto;
+  transition: background 0.3s, border-color 0.3s;
+}
+.care-plot.grown {
+  background: #9ad67a;
+  border-style: solid;
+  border-color: #5aa34a;
+}
+.garden-sparkle {
+  position: absolute;
+  pointer-events: none;
+  font-size: 28px;
+  animation: animalPop 0.8s ease forwards;
+  z-index: 5;
+}
+.choice-row.animal-choices {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.animal-btn.bounce-back { animation: foodBounce 0.5s ease; }
+.friend-pic .garden-animal { display: block; margin: 0 auto; }
+.friend-pic { display: grid; place-items: center; }
+
+.feed-stage {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  align-items: flex-end;
+  width: min(720px, 100%);
+  min-height: 160px;
+  margin: 8px 0;
+}
+.feed-drop {
+  border: 4px dashed #c5b8a8;
+  border-radius: 28px;
+  padding: 10px;
+  min-width: 130px;
+  min-height: 150px;
+  background: #ffffffd8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.feed-drop.over { border-color: #7ec86a; background: #f0ffe8; }
+.food-tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  width: min(720px, 100%);
+  margin-top: auto;
+  padding-top: 10px;
+}

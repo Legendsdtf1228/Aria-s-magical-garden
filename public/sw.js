@@ -4,7 +4,7 @@
  * localStorage collection progress is untouched by updates.
  */
 
-const CACHE_VERSION = "aria-garden-pwa-v1";
+const CACHE_VERSION = "aria-garden-pwa-v5";
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const ASSET_CACHE = `${CACHE_VERSION}-assets`;
 
@@ -45,6 +45,7 @@ function isStaticAsset(url) {
   return (
     /\.(js|css|png|jpg|jpeg|gif|svg|webp|ico|woff2?|ttf|webmanifest)$/i.test(url.pathname) ||
     url.pathname.startsWith("/icons/") ||
+    url.pathname.startsWith("/art/") ||
     url.pathname.startsWith("/_next/") ||
     url.pathname.startsWith("/assets/") ||
     url.pathname.includes("/.vite/")

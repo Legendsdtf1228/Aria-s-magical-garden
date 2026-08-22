@@ -1,0 +1,18 @@
+{
+  "status": "AWAITING_VISUAL_APPROVAL",
+  "rejected": [
+    "cast-v2 / cast-v1 character assets (quarantined)",
+    "R3 cast sheet",
+    "R4/R5 composed welcomes",
+    "02-character-layer-strip",
+    "pink flower Play button",
+    "heavy outlined title"
+  ],
+  "deliverables": [
+    "bunny-anim-sheet-v3.png",
+    "frog-anim-sheet-v3.png",
+    "V3-welcome-landscape-bunny-frog.png",
+    "V3-welcome-portrait-bunny-frog.png"
+  ],
+  "notes": "Bunny + frog only. Butterfly/bird/puppy deferred. Soft storybook paint; no sticker outlines. Title: cream fill + soft green shadow. Play: wooden flower gate."
+}

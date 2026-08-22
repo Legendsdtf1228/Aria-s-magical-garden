@@ -47,9 +47,11 @@ export default defineConfig(async () => {
     server: {
       host: "0.0.0.0",
       allowedHosts: ["terminal.local"],
-      ...(isCodexSeatbeltSandbox
-        ? { watch: { useFsEvents: false, usePolling: true } }
-        : {}),
+      ...(process.env.VITE_WATCH === "false"
+        ? { watch: null }
+        : isCodexSeatbeltSandbox
+          ? { watch: { useFsEvents: false, usePolling: true } }
+          : {}),
     },
     plugins: [
       vinext(),

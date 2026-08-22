@@ -1,5 +1,6 @@
 "use client";
 
+import { GardenAnimal } from "./GardenAnimal";
 import { FRIENDS } from "../data/friends";
 import type { FriendId } from "../types/game";
 
@@ -25,7 +26,13 @@ export function GardenStrip({ collected, catchingId, compact }: Props) {
               className={`garden-slot ${owned ? "owned" : "empty"} ${catchingId === f.id ? "just-caught" : ""}`}
               title={`${f.en} / ${f.es}`}
             >
-              <span className="garden-emoji">{owned ? f.emoji : "○"}</span>
+              <span className="garden-emoji">
+                {owned ? (
+                  <GardenAnimal id={f.id} pose="idle" size={compact ? 36 : 44} title={f.en} />
+                ) : (
+                  "○"
+                )}
+              </span>
               {owned && <span className="garden-name">{f.en}</span>}
             </div>
           );

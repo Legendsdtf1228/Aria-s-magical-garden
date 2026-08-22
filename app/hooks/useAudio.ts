@@ -109,6 +109,10 @@ export function useAudio(prefs: AudioPrefs, speaking: boolean) {
         quack: [380, 300],
         neigh: [440, 520, 400],
         baa: [300, 260],
+        flutter: [900, 1100, 950],
+        hop: [280, 360],
+        crawl: [240, 260, 240],
+        buzz: [500, 540, 500, 560],
       };
       tone(map[kind] ?? [400], 0.35, "triangle", 0.08);
     },
@@ -134,21 +138,59 @@ export function useAudio(prefs: AudioPrefs, speaking: boolean) {
     if (!prefsRef.current.musicOn) return;
     const ctx = ensure();
     if (!ctx || !musicGainRef.current || ambienceRef.current) return;
-    const osc = ctx.createOscillator();
-    const g = ctx.createGain();
-    osc.type = "sine";
-    osc.frequency.value = 196;
-    g.gain.value = 0.015;
-    osc.connect(g);
-    g.connect(musicGainRef.current);
-    osc.start();
+    const out = musicGainRef.current;
+    const nodes: OscillatorNode[] = [];
+    const gains: GainNode[] = [];
+
+    const soft = (freq: number, gain: number, type: OscillatorType = "sine") => {
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.type = type;
+      osc.frequency.value = freq;
+      g.gain.value = gain;
+      osc.connect(g);
+      g.connect(out);
+      osc.start();
+      nodes.push(osc);
+      gains.push(g);
+    };
+
+    // Soft breeze bed
+    soft(196, 0.012);
+    soft(247, 0.008, "triangle");
+
+    // Occasional bird chirp schedule
+    let chirpTimer: ReturnType<typeof setInterval> | null = setInterval(() => {
+      if (!prefsRef.current.musicOn) return;
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(1400, now);
+      osc.frequency.exponentialRampToValueAtTime(1800, now + 0.08);
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.exponentialRampToValueAtTime(0.035, now + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+      osc.connect(g);
+      g.connect(out);
+      osc.start(now);
+      osc.stop(now + 0.22);
+    }, 5200);
+
+    // Soft water near pond feel (very quiet)
+    soft(420, 0.004, "sine");
+
     ambienceRef.current = {
       stop: () => {
-        try {
-          osc.stop();
-        } catch {
-          /* already stopped */
-        }
+        if (chirpTimer) clearInterval(chirpTimer);
+        chirpTimer = null;
+        nodes.forEach((osc) => {
+          try {
+            osc.stop();
+          } catch {
+            /* already stopped */
+          }
+        });
       },
     };
   }, [ensure]);
