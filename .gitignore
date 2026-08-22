@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.next/
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+tools/kokoro-venv/
+__pycache__/
+*.pyc
+*.log
+.wrangler/
+.DS_Store
+Thumbs.db
