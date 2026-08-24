@@ -105,5 +105,7 @@ test("puppy route stays on dry cottage grass, not pond", () => {
 });
 
 test("PWA cache is v5", () => {
+  assert.match(read("public/sw.js"), /aria-garden-pwa-v6/);
+  assert.match(read("public/sw.js"), /LEGACY_CACHE_PREFIXES/);
   assert.match(read("public/sw.js"), /aria-garden-pwa-v5/);
 });

@@ -4,9 +4,10 @@
  * localStorage collection progress is untouched by updates.
  */
 
-const CACHE_VERSION = "aria-garden-pwa-v5";
+const CACHE_VERSION = "aria-garden-pwa-v6";
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const ASSET_CACHE = `${CACHE_VERSION}-assets`;
+const LEGACY_CACHE_PREFIXES = ["aria-garden-pwa-v5"];
 
 const PRECACHE_URLS = [
   "/",
@@ -69,7 +70,14 @@ self.addEventListener("activate", (event) => {
       const keys = await caches.keys();
       await Promise.all(
         keys
-          .filter((key) => key.startsWith("aria-garden-pwa-") && !key.startsWith(CACHE_VERSION))
+          .filter((key) => {
+            // Always wipe every v5 cache (shell + assets + variants)
+            if (LEGACY_CACHE_PREFIXES.some((p) => key === p || key.startsWith(`${p}-`) || key.startsWith(p))) {
+              return true;
+            }
+            // Wipe any other prior aria-garden-pwa-* caches that are not the current version
+            return key.startsWith("aria-garden-pwa-") && !key.startsWith(CACHE_VERSION);
+          })
           .map((key) => caches.delete(key)),
       );
       await self.clients.claim();

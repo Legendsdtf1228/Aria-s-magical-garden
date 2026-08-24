@@ -45,6 +45,8 @@ test("service worker avoids caching secrets and node_modules", () => {
 
 test("service worker caches shell assets and bumps cache version", () => {
   const sw = readFileSync(join(root, "public/sw.js"), "utf8");
+  assert.match(sw, /aria-garden-pwa-v6/);
+  assert.match(sw, /LEGACY_CACHE_PREFIXES/);
   assert.match(sw, /aria-garden-pwa-v5/);
   assert.match(sw, /\/art\//);
   assert.match(sw, /\/manifest\.webmanifest/);
