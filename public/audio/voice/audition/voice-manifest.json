@@ -1,0 +1,51 @@
+{
+  "pack": "audition",
+  "model": "elevenlabs/eleven-multilingual-v2",
+  "outputFormat": "mp3_44100_128",
+  "note": "Scaffold only — run npm run voice:audition after Workers AI credits are available. No audio files committed.",
+  "voices": [
+    {
+      "id": "21m00Tcm4TlvDq8ikWAM",
+      "name": "Rachel",
+      "note": "Calm, clear, warm — strong bilingual baseline"
+    },
+    {
+      "id": "EXAVITQu4vr4xnSDxMaL",
+      "name": "Bella",
+      "note": "Soft, conversational, gentle encouragement"
+    },
+    {
+      "id": "XrExE9yKIg1WjnnlVkGX",
+      "name": "Matilda",
+      "note": "Storybook warmth — expressive without being sharp"
+    }
+  ],
+  "phrases": [
+    {
+      "id": "welcomeMagical",
+      "en": "Welcome to your magical garden, Aria!",
+      "es": "¡Bienvenida a tu jardín mágico, Aria!"
+    },
+    {
+      "id": "findRedFlower",
+      "en": "Can you find the red flower?",
+      "es": "¿Puedes encontrar la flor roja?"
+    },
+    {
+      "id": "countOneToFour",
+      "en": "One, two, three, four!",
+      "es": "¡Uno, dos, tres, cuatro!"
+    },
+    {
+      "id": "greatJobAria",
+      "en": "Great job, Aria!",
+      "es": "¡Muy bien, Aria!"
+    },
+    {
+      "id": "tryAnother",
+      "en": "Let's try another one.",
+      "es": "Intentemos otra vez."
+    }
+  ],
+  "entries": []
+}

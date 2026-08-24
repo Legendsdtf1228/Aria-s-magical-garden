@@ -39,7 +39,11 @@ function shouldNeverCache(url) {
 }
 
 function isVoiceOrAudio(url) {
-  return /\/audio\//i.test(url.pathname) || /\.(mp3|wav|ogg|m4a)$/i.test(url.pathname);
+  return (
+    /\/audio\//i.test(url.pathname) ||
+    /\/voice-audition\//i.test(url.pathname) ||
+    /\.(mp3|wav|ogg|m4a)$/i.test(url.pathname)
+  );
 }
 
 function isStaticAsset(url) {

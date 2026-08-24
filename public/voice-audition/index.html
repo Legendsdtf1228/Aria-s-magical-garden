@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aria Garden — Voice Audition</title>
+  <style>
+    :root { color-scheme: light; font-family: Georgia, "Times New Roman", serif; }
+    body { margin: 0; padding: 24px; background: linear-gradient(180deg, #e8f6ff, #f7ffe8); color: #1f2a1a; }
+    h1 { font-size: 1.6rem; margin: 0 0 0.35rem; }
+    .sub { margin: 0 0 1.25rem; max-width: 52rem; line-height: 1.45; }
+    table { width: 100%; border-collapse: collapse; background: #fffef8cc; box-shadow: 0 8px 24px #0001; }
+    th, td { border: 1px solid #d5e0c8; padding: 12px; vertical-align: top; }
+    thead th { background: #dff0c8; text-align: left; font-weight: 700; }
+    .vid { font-size: 0.72rem; opacity: 0.75; margin: 4px 0; }
+    thead p { margin: 0; font-weight: 400; font-size: 0.85rem; }
+    .txt { display: grid; gap: 4px; margin-top: 6px; font-weight: 400; font-size: 0.92rem; }
+    .txt [lang="es"] { opacity: 0.85; }
+    .plays { white-space: nowrap; }
+    button {
+      margin: 0 4px 4px 0; padding: 8px 12px; border-radius: 999px; border: 0;
+      background: #3f8f4d; color: #fff; font-weight: 700; cursor: pointer;
+    }
+    button:hover { filter: brightness(1.05); }
+    button.playing { background: #c45c2a; }
+    .meta { margin-top: 1rem; font-size: 0.85rem; opacity: 0.8; }
+    #now { min-height: 1.2em; margin: 0.5rem 0 1rem; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <h1>Voice audition pack</h1>
+  <p class="sub">Compare three warm female ElevenLabs voices (Cloudflare Workers AI · <code>elevenlabs/eleven-multilingual-v2</code>).
+  Play English and Spanish for each phrase. Choose one voice_id for the full offline library.</p>
+  <p class="banner" style="background:#fff3cd;border:1px solid #e6c86a;padding:12px 14px;border-radius:10px;max-width:52rem;">
+    Audio files are generated with <code>npm run voice:audition</code> (Wrangler login required).
+    If play buttons fail, add Workers AI / AI Gateway credits for ElevenLabs, then re-run with <code>--force</code>.
+  </p>
+  <p id="now"></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Phrase</th>
+        <th><strong>Rachel</strong><div class="vid"><code>21m00Tcm4TlvDq8ikWAM</code></div><p>Calm, clear, warm — strong bilingual baseline</p></th><th><strong>Bella</strong><div class="vid"><code>EXAVITQu4vr4xnSDxMaL</code></div><p>Soft, conversational, gentle encouragement</p></th><th><strong>Matilda</strong><div class="vid"><code>XrExE9yKIg1WjnnlVkGX</code></div><p>Storybook warmth — expressive without being sharp</p></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row"><code>welcomeMagical</code><div class="txt"><span lang="en">Welcome to your magical garden, Aria!</span><span lang="es">¡Bienvenida a tu jardín mágico, Aria!</span></div></th>
+        <td class="plays">
+            <button type="button" data-src="/audio/voice/audition/21m00Tcm4TlvDq8ikWAM/en-US/welcomeMagical.mp3">EN ▶</button>
+            <button type="button" data-src="/audio/voice/audition/21m00Tcm4TlvDq8ikWAM/es-MX/welcomeMagical.mp3">ES ▶</button>
+          </td><td class="plays">
+            <button type="button" data-src="/audio/voice/audition/EXAVITQu4vr4xnSDxMaL/en-US/welcomeMagical.mp3">EN ▶</button>
+            <button type="button" data-src="/audio/voice/audition/EXAVITQu4vr4xnSDxMaL/es-MX/welcomeMagical.mp3">ES ▶</button>
+          </td><td class="plays">
+            <button type="button" data-src="/audio/voice/audition/XrExE9yKIg1WjnnlVkGX/en-US/welcomeMagical.mp3">EN ▶</button>
+            <button type="button" data-src="/audio/voice/audition/XrExE9yKIg1WjnnlVkGX/es-MX/welcomeMagical.mp3">ES ▶</button>
+          </td>
+      </tr>
+<tr>
+        <th scope="row"><code>findRedFlower</code><div class="txt"><span lang="en">Can you find the red flower?</span><span lang="es">¿Puedes encontrar la flor roja?</span></div></th>
+        <td class="plays">
+            <button type="button" data-src="/audio/voice/audition/21m00Tcm4TlvDq8ikWAM/en-US/findRedFlower.mp3">EN ▶</button>
+            <button type="button" data-src="/audio/voice/audition/21m00Tcm4TlvDq8ikWAM/es-MX/findRedFlower.mp3">ES ▶</button>
+          </td><td class="plays">
+            <button type="button" data-src="/audio/voice/audition/EXAVITQu4vr4xnSDxMaL/en-US/findRedFlower.mp3">EN ▶</button>
+            <button type="button" data-src="/audio/voice/audition/EXAVITQu4vr4xnSDxMaL/es-MX/findRedFlower.mp3">ES ▶</button>
+          </td><td class="plays">
+            <button type="button" data-src="/audio/voice/audition/XrExE9yKIg1WjnnlVkGX/en-US/findRedFlower.mp3">EN ▶</button>
+            <button type="button" data-src="/audio/voice/audition/XrExE9yKIg1WjnnlVkGX/es-MX/findRedFlower.mp3">ES ▶</button>
+          </td>
+      </tr>
+<tr>
+        <th scope="row"><code>countOneToFour</code><div class="txt"><span lang="en">One, two, three, four!</span><span lang="es">¡Uno, dos, tres, cuatro!</span></div></th>
+        <td class="plays">
+            <button type="button" data-src="/audio/voice/audition/21m00Tcm4TlvDq8ikWAM/en-US/countOneToFour.mp3">EN ▶</button>
+            <button type="button" data-src="/audio/voice/audition/21m00Tcm4TlvDq8ikWAM/es-MX/countOneToFour.mp3">ES ▶</button>
+          </td><td class="plays">
+            <button type="button" data-src="/audio/voice/audition/EXAVITQu4vr4xnSDxMaL/en-US/countOneToFour.mp3">EN ▶</button>
+            <button type="button" data-src="/audio/voice/audition/EXAVITQu4vr4xnSDxMaL/es-MX/countOneToFour.mp3">ES ▶</button>
+          </td><td class="plays">
+            <button type="button" data-src="/audio/voice/audition/XrExE9yKIg1WjnnlVkGX/en-US/countOneToFour.mp3">EN ▶</button>
+            <button type="button" data-src="/audio/voice/audition/XrExE9yKIg1WjnnlVkGX/es-MX/countOneToFour.mp3">ES ▶</button>
+          </td>
+      </tr>
+<tr>
+        <th scope="row"><code>greatJobAria</code><div class="txt"><span lang="en">Great job, Aria!</span><span lang="es">¡Muy bien, Aria!</span></div></th>
+        <td class="plays">
+            <button type="button" data-src="/audio/voice/audition/21m00Tcm4TlvDq8ikWAM/en-US/greatJobAria.mp3">EN ▶</button>
+            <button type="button" data-src="/audio/voice/audition/21m00Tcm4TlvDq8ikWAM/es-MX/greatJobAria.mp3">ES ▶</button>
+          </td><td class="plays">
+            <button type="button" data-src="/audio/voice/audition/EXAVITQu4vr4xnSDxMaL/en-US/greatJobAria.mp3">EN ▶</button>
+            <button type="button" data-src="/audio/voice/audition/EXAVITQu4vr4xnSDxMaL/es-MX/greatJobAria.mp3">ES ▶</button>
+          </td><td class="plays">
+            <button type="button" data-src="/audio/voice/audition/XrExE9yKIg1WjnnlVkGX/en-US/greatJobAria.mp3">EN ▶</button>
+            <button type="button" data-src="/audio/voice/audition/XrExE9yKIg1WjnnlVkGX/es-MX/greatJobAria.mp3">ES ▶</button>
+          </td>
+      </tr>
+<tr>
+        <th scope="row"><code>tryAnother</code><div class="txt"><span lang="en">Let's try another one.</span><span lang="es">Intentemos otra vez.</span></div></th>
+        <td class="plays">
+            <button type="button" data-src="/audio/voice/audition/21m00Tcm4TlvDq8ikWAM/en-US/tryAnother.mp3">EN ▶</button>
+            <button type="button" data-src="/audio/voice/audition/21m00Tcm4TlvDq8ikWAM/es-MX/tryAnother.mp3">ES ▶</button>
+          </td><td class="plays">
+            <button type="button" data-src="/audio/voice/audition/EXAVITQu4vr4xnSDxMaL/en-US/tryAnother.mp3">EN ▶</button>
+            <button type="button" data-src="/audio/voice/audition/EXAVITQu4vr4xnSDxMaL/es-MX/tryAnother.mp3">ES ▶</button>
+          </td><td class="plays">
+            <button type="button" data-src="/audio/voice/audition/XrExE9yKIg1WjnnlVkGX/en-US/tryAnother.mp3">EN ▶</button>
+            <button type="button" data-src="/audio/voice/audition/XrExE9yKIg1WjnnlVkGX/es-MX/tryAnother.mp3">ES ▶</button>
+          </td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="meta">Generated 2026-08-24T19:44:02.104Z · Open via local app at <code>/voice-audition/</code> · Stop here for voice approval.</p>
+  <script>
+    const now = document.getElementById("now");
+    let current = null;
+    document.querySelectorAll("button[data-src]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const src = btn.getAttribute("data-src");
+        if (current) { current.pause(); current = null; }
+        document.querySelectorAll("button.playing").forEach((b) => b.classList.remove("playing"));
+        const audio = new Audio(src);
+        current = audio;
+        btn.classList.add("playing");
+        now.textContent = "Playing: " + src;
+        audio.play().catch((e) => { now.textContent = "Play failed: " + e.message; });
+        audio.onended = () => { btn.classList.remove("playing"); now.textContent = ""; };
+      });
+    });
+  </script>
+</body>
+</html>

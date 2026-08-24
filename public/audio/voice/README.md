@@ -1,24 +1,32 @@
 # Optional recorded voice files
 
-The game works without any files in this folder. Browser speech synthesis is the default.
+The game works without any files in this folder. Browser `speechSynthesis` is used **only** when a recorded file is missing.
 
-If you add recordings, use this naming:
+## Offline generation (Cloudflare Workers AI)
+
+Do **not** generate audio in the browser. Use the protected CLI:
+
+```bash
+npx wrangler login
+npm.cmd run voice:audition
+# or force regenerate:
+node scripts/generate-voice-narration.mjs --audition --force
+```
+
+- Model: `elevenlabs/eleven-multilingual-v2`
+- Format: `mp3_44100_128`
+- Auth: Wrangler OAuth (or local `.env` `CLOUDFLARE_API_TOKEN` — never commit)
+- Audition output: `public/audio/voice/audition/{voiceId}/en-US|es-MX/{phraseId}.mp3`
+- Manifest: `public/audio/voice/audition/voice-manifest.json`
+- Compare locally: open `/voice-audition/`
+
+**Stop after the audition pack** and pick one `voice_id` before generating the full library into:
 
 ```
-{phraseKey}.en.mp3
-{phraseKey}.es.mp3
+public/audio/voice/en-US/{phraseId}.mp3
+public/audio/voice/es-MX/{phraseId}.mp3
 ```
 
-## Suggested phrase keys
+## Phrase IDs
 
-| Key | English idea | Spanish idea |
-| --- | --- | --- |
-| `welcome` | Welcome to Aria's Color Garden! | ¡Bienvenida al Jardín de Colores de Aria! |
-| `try-again` | Let's try another one. | Intentemos otra vez. |
-| `play-again` | Let's play again! | ¡Vamos a jugar otra vez! |
-| `great-job` | Great job! | ¡Muy bien! |
-| `new-friend` | A new friend! | ¡Un nuevo amigo! |
-
-Dynamic lines (color names, animal names, numbers, etc.) still use speech synthesis unless you add matching keys such as `color-red.en.mp3`.
-
-Keep recordings warm, clear, patient, and toddler-friendly. Do not use copyrighted performances.
+Identical IDs are used for English and Spanish. See `app/data/phraseManifest.ts` for gameplay keys; audition pack IDs are listed in `scripts/generate-voice-narration.mjs`.

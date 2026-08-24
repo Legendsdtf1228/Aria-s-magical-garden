@@ -13,3 +13,7 @@ __pycache__/
 .wrangler/
 .DS_Store
 Thumbs.db
+.cursor/
+public/art/characters/**/*._contaminated.webp
+public/audio/voice/audition/**/*.mp3
+public/audio/voice/audition/**/.tmp-*.mp3
