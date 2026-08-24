@@ -554,13 +554,36 @@
   background: transparent;
 }
 
-/* LAYER 3 — invisible hotspots (production: no visible chrome) */
+/* LAYER 2b — painted activity landmarks (visible tappable cues) */
+.map-landmark-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.map-landmark {
+  position: absolute;
+  transform: translate(-50%, -72%);
+  height: auto;
+  max-width: 220px;
+  min-width: 110px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 10px #00000066);
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+.map-landmark.is-armed {
+  transform: translate(-50%, -78%) scale(1.12);
+  filter: drop-shadow(0 0 16px #ffe08acc) drop-shadow(0 10px 12px #00000066);
+}
+
+/* LAYER 3 — hotspots over landmarks */
 .map-hotspot-layer {
   position: absolute;
   inset: 0;
   z-index: 3;
 }
-.map-hotspot-invisible {
+.map-hotspot-invisible,
+.map-hotspot-visible {
   position: absolute;
   transform: translate(-50%, -50%);
   margin: 0;
@@ -575,20 +598,23 @@
   appearance: none;
 }
 .map-hotspot-invisible::before,
-.map-hotspot-invisible::after {
+.map-hotspot-invisible::after,
+.map-hotspot-visible::before,
+.map-hotspot-visible::after {
   content: none !important;
   display: none !important;
 }
-.map-hotspot-invisible:focus-visible {
+.map-hotspot-invisible:focus-visible,
+.map-hotspot-visible:focus-visible {
   outline: 3px solid #ffe27a;
   outline-offset: 2px;
 }
-.map-hotspot-invisible.is-armed {
-  /* Feedback without a bubble: slight scale via filter on the world is avoided;
-     keep hotspot itself invisible; scenery reaction is spoken name only */
+.map-hotspot-invisible.is-armed,
+.map-hotspot-visible.is-armed {
   background: transparent;
 }
-.garden-map-root.debug-hotspots .map-hotspot-invisible {
+.garden-map-root.debug-hotspots .map-hotspot-invisible,
+.garden-map-root.debug-hotspots .map-hotspot-visible {
   outline: 2px dashed #ff6b9a99;
   background: #ff6b9a22;
 }

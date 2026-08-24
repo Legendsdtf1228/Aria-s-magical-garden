@@ -3,13 +3,24 @@
 import { useCallback, useEffect, useState } from "react";
 import { ActivityComplete } from "../components/ActivityComplete";
 import { ActivityShell } from "../components/ActivityShell";
+import { CharacterSprite } from "../components/game/SceneKit";
 import { MOVEMENTS } from "../data/catalog";
 import { friendById } from "../data/friends";
 import { shuffle, type RewardResult } from "../data/collection";
+import { MUSIC_CUE_ART, characterArtId } from "../game/assets";
 import type { MovementItem } from "../types/game";
 import type { ActivityCommonProps } from "./types";
 
 const ROUNDS = 6;
+
+const CUE_SLOTS = [
+  { x: 0.1, y: 0.88 },
+  { x: 0.26, y: 0.88 },
+  { x: 0.42, y: 0.88 },
+  { x: 0.58, y: 0.88 },
+  { x: 0.74, y: 0.88 },
+  { x: 0.9, y: 0.88 },
+];
 
 export function MusicMovementActivity(props: ActivityCommonProps) {
   const [round, setRound] = useState(0);
@@ -73,40 +84,88 @@ export function MusicMovementActivity(props: ActivityCommonProps) {
 
   if (complete) {
     return (
-      <ActivityShell activityId="music" stars={stars} starsNeeded={ROUNDS} collected={props.collected} busy speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onOpenSettings={props.onOpenSettings} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch}>
-        <ActivityComplete titleEn="What wonderful movers!" titleEs="¡Qué bien se mueven!" stars={stars} reward={lastReward} onAgain={() => { setOrder(shuffle(MOVEMENTS)); setStars(0); setRound(0); props.voice.speak("Let's play again!", "¡Vamos a jugar otra vez!"); }} onHome={props.onHome} />
+      <ActivityShell
+        activityId="music"
+        stars={stars}
+        starsNeeded={ROUNDS}
+        collected={props.collected}
+        busy
+        speechOn={props.speechOn}
+        onToggleSpeech={props.onToggleSpeech}
+        onOpenSettings={props.onOpenSettings}
+        onHomeRequest={props.onHomeRequest}
+        onCatchFriend={onCatch}
+      >
+        <ActivityComplete
+          titleEn="What wonderful movers!"
+          titleEs="¡Qué bien se mueven!"
+          stars={stars}
+          reward={lastReward}
+          onAgain={() => {
+            setOrder(shuffle(MOVEMENTS));
+            setStars(0);
+            setRound(0);
+            props.voice.speak("Let's play again!", "¡Vamos a jugar otra vez!");
+          }}
+          onHome={props.onHome}
+        />
       </ActivityShell>
     );
   }
 
   return (
-    <ActivityShell activityId="music" stars={stars} starsNeeded={ROUNDS} collected={props.collected} catchingId={catchingId} busy={false} speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onOpenSettings={props.onOpenSettings} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch} onRepeat={() => playMove(current)}>
-      <section className="prompt">
-        <p>Move with me • Muévete conmigo</p>
-        <button type="button" onClick={() => playMove(current)} style={{ ["--target" as string]: "#c08aff" }}>
-          <span>{current.en}</span><b>•</b><span>{current.es}</span>
-        </button>
-      </section>
-      <section className="playarea stage-area">
-        <div className={`dancer ${anim ? `do-${current.cue}` : ""}`} aria-hidden>
-          <span className="big-emoji">🧒</span>
-          <span className="move-emoji">{current.emoji}</span>
+    <ActivityShell
+      activityId="music"
+      stars={stars}
+      starsNeeded={ROUNDS}
+      collected={props.collected}
+      catchingId={catchingId}
+      busy={false}
+      speechOn={props.speechOn}
+      onToggleSpeech={props.onToggleSpeech}
+      onOpenSettings={props.onOpenSettings}
+      onHomeRequest={props.onHomeRequest}
+      onCatchFriend={onCatch}
+      onRepeat={() => playMove(current)}
+    >
+      <div className="music-gazebo-scene" data-music-v5="painted">
+        <div className="painted-prompt-sign meadow-prompt" role="status">
+          <p className="painted-prompt-line">{current.en}</p>
+          <p className="painted-prompt-line es">{current.es}</p>
         </div>
-        <p>
-          {current.en}! · ¡{current.es}!
-        </p>
-      </section>
-      <section className="choice-row wrap-row" aria-label="Movements">
-        {MOVEMENTS.map((m) => (
-          <button key={m.id} type="button" className={`big-choice mini-choice ${m.id === current.id ? "selected" : ""}`} onClick={() => playMove(m)} aria-label={`${m.en}, ${m.es}`}>
-            <span className="big-emoji">{m.emoji}</span>
-            <strong>{m.en}</strong>
-          </button>
-        ))}
-      </section>
-      <div className="finish-actions music-next">
-        <button type="button" className="play" onClick={next}>
-          Next • Siguiente ▶
+
+        <div className={`music-dancer ${anim ? `do-${current.cue}` : ""}`} aria-hidden>
+          <CharacterSprite id={characterArtId("bunny")} size={160} pose={anim ? "celebrate" : "idle"} title="Dancer" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="music-current-cue" src={MUSIC_CUE_ART[current.cue]} alt="" draggable={false} />
+        </div>
+
+        <div className="music-cue-row" aria-label="Movements">
+          {MOVEMENTS.map((m, i) => {
+            const slot = CUE_SLOTS[i] || CUE_SLOTS[0];
+            return (
+              <button
+                key={m.id}
+                type="button"
+                className={`music-cue-btn ${m.id === current.id ? "is-selected" : ""}`}
+                style={{ left: `${slot.x * 100}%`, top: `${slot.y * 100}%` }}
+                onClick={() => playMove(m)}
+                aria-label={`${m.en}, ${m.es}`}
+              >
+                <span className="env-choice-shadow" aria-hidden />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img className="music-cue-img" src={MUSIC_CUE_ART[m.cue]} alt="" draggable={false} />
+                <span className="env-choice-label env-choice-label-lg">
+                  <strong>{m.en}</strong>
+                  <small>{m.es}</small>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <button type="button" className="music-next-btn" onClick={next}>
+          Next • Siguiente
         </button>
       </div>
     </ActivityShell>

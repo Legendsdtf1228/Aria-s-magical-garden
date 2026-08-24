@@ -4,10 +4,10 @@
  * localStorage collection progress is untouched by updates.
  */
 
-const CACHE_VERSION = "aria-garden-pwa-v6";
+const CACHE_VERSION = "aria-garden-pwa-v7";
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const ASSET_CACHE = `${CACHE_VERSION}-assets`;
-const LEGACY_CACHE_PREFIXES = ["aria-garden-pwa-v5"];
+const LEGACY_CACHE_PREFIXES = ["aria-garden-pwa-v5", "aria-garden-pwa-v6"];
 
 const PRECACHE_URLS = [
   "/",

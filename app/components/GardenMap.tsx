@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { GARDEN_LOCATIONS } from "../data/gardenMap";
 import { nextMapScroll } from "../data/gardenMapCore.mjs";
-import { SCENE_ART } from "../game/assets";
+import { MAP_LANDMARK_ART, SCENE_ART } from "../game/assets";
 import type { ActivityId, FriendId } from "../types/game";
 import { MapCharacterLayer } from "./MapCharacterLayer";
 import { ParentGateFlower } from "./ParentGate";
@@ -22,10 +22,11 @@ type Props = {
 
 /**
  * Layered garden map:
- * 1) Environment background (no animals / text / UI)
- * 2) Character sprites (collected friends only)
- * 3) Invisible semantic hotspots
- * 4) Title + child/parent UI in safe areas
+ * 1) Environment background
+ * 2) Painted activity landmarks (visible tappable cues)
+ * 3) Character sprites (collected friends)
+ * 4) Hotspot buttons over landmarks
+ * 5) Title + child/parent UI
  */
 export function GardenMap({
   collected,
@@ -49,9 +50,12 @@ export function GardenMap({
     return () => mq.removeEventListener("change", apply);
   }, []);
 
-  useEffect(() => () => {
-    if (armTimer.current) clearTimeout(armTimer.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (armTimer.current) clearTimeout(armTimer.current);
+    },
+    [],
+  );
 
   const pan = useCallback((direction: "left" | "right") => {
     const el = scroller.current;
@@ -91,31 +95,51 @@ export function GardenMap({
     >
       <div className="garden-map-frame" ref={scroller}>
         <div className="garden-map-world">
-          {/* LAYER 1 — environment only */}
           <div className="map-env-layer" aria-hidden>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={bg.src} alt="" draggable={false} className="map-env-img" />
           </div>
 
-          {/* LAYER 2 — characters (WebP only) */}
+          <div className="map-landmark-layer" aria-hidden>
+            {GARDEN_LOCATIONS.map((loc) => {
+              const src = MAP_LANDMARK_ART[loc.id];
+              if (!src) return null;
+              const lit = armed === loc.id || transitioningTo === loc.id;
+              return (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={`lm-${loc.id}`}
+                  src={src}
+                  alt=""
+                  draggable={false}
+                  className={`map-landmark ${lit ? "is-armed" : ""}`}
+                style={{
+                  left: `${loc.x}%`,
+                  top: `${loc.y}%`,
+                  width: `max(120px, ${loc.hit + 6}%)`,
+                }}
+                />
+              );
+            })}
+          </div>
+
           <MapCharacterLayer
             collected={collected}
             onHearFriend={onHearFriend}
             aspect={portrait ? "portrait" : "landscape"}
           />
 
-          {/* LAYER 3 — invisible hotspots */}
           <div className="map-hotspot-layer">
             {GARDEN_LOCATIONS.map((loc) => (
               <button
                 key={loc.id}
                 type="button"
-                className={`map-hotspot-invisible ${armed === loc.id || transitioningTo === loc.id ? "is-armed" : ""}`}
+                className={`map-hotspot-visible ${armed === loc.id || transitioningTo === loc.id ? "is-armed" : ""}`}
                 style={{
                   left: `${loc.x}%`,
                   top: `${loc.y}%`,
-                  width: `max(88px, ${loc.hit}%)`,
-                  height: `max(88px, ${loc.hit}%)`,
+                  width: `max(120px, ${loc.hit + 6}%)`,
+                  height: `max(120px, ${loc.hit + 6}%)`,
                 }}
                 aria-label={`${loc.en}, ${loc.es}`}
                 onClick={() => tapSpot(loc.id, loc.en, loc.es)}
@@ -125,7 +149,6 @@ export function GardenMap({
         </div>
       </div>
 
-      {/* LAYER 4 — UI text + controls (not baked into art) */}
       <div className="map-ui-layer">
         <h1 className="map-ui-title">
           Aria&apos;s
@@ -135,22 +158,14 @@ export function GardenMap({
           <ParentGateFlower onOpen={onOpenSettings} />
         </div>
         <div className="map-nav-gutter left" aria-hidden={false}>
-          <TouchSafeButton
-            className="map-ui-arrow left"
-            aria-label="Look left"
-            onClick={() => pan("left")}
-          >
+          <TouchSafeButton className="map-ui-arrow left" aria-label="Look left" onClick={() => pan("left")}>
             <span className="map-arrow-glyph" aria-hidden>
               ◀
             </span>
           </TouchSafeButton>
         </div>
         <div className="map-nav-gutter right">
-          <TouchSafeButton
-            className="map-ui-arrow right"
-            aria-label="Look right"
-            onClick={() => pan("right")}
-          >
+          <TouchSafeButton className="map-ui-arrow right" aria-label="Look right" onClick={() => pan("right")}>
             <span className="map-arrow-glyph" aria-hidden>
               ▶
             </span>

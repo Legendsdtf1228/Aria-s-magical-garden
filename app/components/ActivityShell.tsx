@@ -28,9 +28,8 @@ type Props = {
   children: ReactNode;
 };
 
-const ACTIVITY_SCENES: Partial<
-  Record<ActivityId, { landscape: SceneId; portrait: SceneId }>
-> = {
+/** Every activity gets a dedicated mural — never garden-map + floating cards. */
+const ACTIVITY_SCENES: Record<ActivityId, { landscape: SceneId; portrait: SceneId }> = {
   colors: {
     landscape: "color-flower-patch-landscape",
     portrait: "color-flower-patch-portrait",
@@ -43,11 +42,38 @@ const ACTIVITY_SCENES: Partial<
     landscape: "counting-pond-landscape",
     portrait: "counting-pond-portrait",
   },
+  feed: {
+    landscape: "picnic-meadow-landscape",
+    portrait: "picnic-meadow-portrait",
+  },
+  animalSounds: {
+    landscape: "sound-grove-landscape",
+    portrait: "sound-grove-portrait",
+  },
+  shapes: {
+    landscape: "shape-meadow-landscape",
+    portrait: "shape-meadow-portrait",
+  },
+  gardenCare: {
+    landscape: "care-beds-landscape",
+    portrait: "care-beds-portrait",
+  },
+  freePlay: {
+    landscape: "freeplay-path-landscape",
+    portrait: "freeplay-path-portrait",
+  },
+  music: {
+    landscape: "music-gazebo-landscape",
+    portrait: "music-gazebo-portrait",
+  },
+  animals: {
+    landscape: "friends-yard-landscape",
+    portrait: "friends-yard-portrait",
+  },
 };
 
 /**
- * V5 toddler activity chrome — dedicated painted scenes + shared safe controls.
- * Never reuses garden-map for Find / Color / Counting.
+ * Toddler activity chrome — dedicated painted scenes + shared safe controls.
  */
 export function ActivityShell({
   activityId,
@@ -63,9 +89,7 @@ export function ActivityShell({
   const aspect = useSceneAspect();
   const meta = ACTIVITIES.find((a) => a.id === activityId)!;
   const pair = ACTIVITY_SCENES[activityId];
-  const scene =
-    sceneId ??
-    (pair ? pair[aspect] : aspect === "portrait" ? "garden-map-portrait" : "garden-map-landscape");
+  const scene = sceneId ?? pair[aspect];
 
   return (
     <GardenScene

@@ -7,14 +7,27 @@ import { SoftToast } from "../components/SoftToast";
 import { SHAPES } from "../data/catalog";
 import { friendById } from "../data/friends";
 import { pickChoices, shuffle, type RewardResult } from "../data/collection";
+import { SHAPE_STONE_ART } from "../game/assets";
 import type { ShapeItem } from "../types/game";
 import type { ActivityCommonProps } from "./types";
 
 const ROUNDS = 6;
 
-function ShapeVisual({ kind, className = "" }: { kind: ShapeItem["kind"]; className?: string }) {
-  return <span className={`shape-vis shape-${kind} ${className}`} aria-hidden />;
-}
+/** Feminine Spanish shape nouns use "la". */
+const SHAPE_GENDER: Record<string, "m" | "f"> = {
+  circle: "m",
+  square: "m",
+  triangle: "m",
+  star: "f",
+  heart: "m",
+  oval: "m",
+};
+
+const GROUND_SLOTS = [
+  { x: 0.22, y: 0.8 },
+  { x: 0.5, y: 0.84 },
+  { x: 0.78, y: 0.8 },
+];
 
 export function ShapeMeadowActivity(props: ActivityCommonProps) {
   const [round, setRound] = useState(0);
@@ -24,16 +37,20 @@ export function ShapeMeadowActivity(props: ActivityCommonProps) {
   const [busy, setBusy] = useState(false);
   const [planted, setPlanted] = useState<string[]>([]);
   const [wiggleId, setWiggleId] = useState<string | null>(null);
-  const [toast, setToast] = useState<{ emoji: string; title: string } | null>(null);
+  const [toast, setToast] = useState<{ title: string } | null>(null);
   const [catchingId, setCatchingId] = useState<string | null>(null);
   const [lastReward, setLastReward] = useState<RewardResult | null>(null);
   const lock = useRef(false);
   const target = order[round % order.length];
   const complete = stars >= ROUNDS;
+  const art = SHAPE_GENDER[target.id] === "f" ? "la" : "el";
 
   const prompt = useCallback(() => {
-    props.voice.speak(`Find the ${target.en.toLowerCase()}.`, `Busca el ${target.es.toLowerCase()}.`);
-  }, [props.voice, target]);
+    props.voice.speak(
+      `Find the ${target.en.toLowerCase()}.`,
+      `Busca ${art} ${target.es.toLowerCase()}.`,
+    );
+  }, [props.voice, target, art]);
 
   useEffect(() => {
     if (complete) return;
@@ -56,10 +73,10 @@ export function ShapeMeadowActivity(props: ActivityCommonProps) {
     }
     lock.current = true;
     setBusy(true);
-    setPlanted((p) => [...p, s.gardenEmoji]);
+    setPlanted((p) => [...p, s.id]);
     const reward = props.onAward();
     setLastReward(reward);
-    setToast({ emoji: s.gardenEmoji, title: `${s.en} • ${s.es}` });
+    setToast({ title: `${s.en} • ${s.es}` });
     props.voice.speak(`Great job! ${s.en}.`, `${s.es}.`);
     if (reward.kind === "friend") {
       setCatchingId(reward.id);
@@ -86,40 +103,96 @@ export function ShapeMeadowActivity(props: ActivityCommonProps) {
 
   if (complete) {
     return (
-      <ActivityShell activityId="shapes" stars={stars} starsNeeded={ROUNDS} collected={props.collected} busy speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onOpenSettings={props.onOpenSettings} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch}>
-        <ActivityComplete titleEn="Your meadow is blooming!" titleEs="¡Qué lindo prado!" stars={stars} reward={lastReward} onAgain={() => { setOrder(shuffle(SHAPES)); setStars(0); setRound(0); setPlanted([]); props.voice.speak("Let's play again!", "¡Vamos a jugar otra vez!"); }} onHome={props.onHome} />
+      <ActivityShell
+        activityId="shapes"
+        stars={stars}
+        starsNeeded={ROUNDS}
+        collected={props.collected}
+        busy
+        speechOn={props.speechOn}
+        onToggleSpeech={props.onToggleSpeech}
+        onOpenSettings={props.onOpenSettings}
+        onHomeRequest={props.onHomeRequest}
+        onCatchFriend={onCatch}
+      >
+        <ActivityComplete
+          titleEn="Your meadow is blooming!"
+          titleEs="¡Qué lindo prado!"
+          stars={stars}
+          reward={lastReward}
+          onAgain={() => {
+            setOrder(shuffle(SHAPES));
+            setStars(0);
+            setRound(0);
+            setPlanted([]);
+            props.voice.speak("Let's play again!", "¡Vamos a jugar otra vez!");
+          }}
+          onHome={props.onHome}
+        />
       </ActivityShell>
     );
   }
 
   return (
-    <ActivityShell activityId="shapes" stars={stars} starsNeeded={ROUNDS} collected={props.collected} catchingId={catchingId} busy={busy} speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onOpenSettings={props.onOpenSettings} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch} onRepeat={prompt}>
-      <section className="prompt">
-        <p>Match the shape • Une la forma</p>
-        <button type="button" onClick={prompt} style={{ ["--target" as string]: "#9ad67a" }}>
-          <span>{target.en}</span><b>•</b><span>{target.es}</span>
-        </button>
-      </section>
-      <section className="playarea">
-        <div className={`shape-hero ${busy ? "bounce" : ""}`}>
-          <ShapeVisual kind={target.kind} />
+    <ActivityShell
+      activityId="shapes"
+      stars={stars}
+      starsNeeded={ROUNDS}
+      collected={props.collected}
+      catchingId={catchingId}
+      busy={busy}
+      speechOn={props.speechOn}
+      onToggleSpeech={props.onToggleSpeech}
+      onOpenSettings={props.onOpenSettings}
+      onHomeRequest={props.onHomeRequest}
+      onCatchFriend={onCatch}
+      onRepeat={prompt}
+    >
+      <div className="shape-meadow-scene" data-shapes-v5="painted">
+        <div className="painted-prompt-sign meadow-prompt" role="status">
+          <p className="painted-prompt-line">Find the {target.en}</p>
+          <p className="painted-prompt-line es">
+            Busca {art} {target.es}
+          </p>
         </div>
-        <div className="planted-row" aria-label="Garden shapes">
-          {planted.map((e, i) => (
-            <span key={`${e}-${i}`} className="planted">{e}</span>
+
+        <div className="shape-hero-spot" aria-hidden>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="shape-hero-img" src={SHAPE_STONE_ART[target.kind]} alt="" draggable={false} />
+        </div>
+
+        <div className="shape-planted-row" aria-label="Collected shapes">
+          {planted.map((id, i) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img key={`${id}-${i}`} className="shape-planted-img" src={SHAPE_STONE_ART[id]} alt="" draggable={false} />
           ))}
         </div>
-      </section>
-      <section className="choice-row" aria-label="Shapes">
-        {choices.map((s) => (
-          <button key={s.id} type="button" className={`big-choice shape-choice ${wiggleId === s.id ? "wiggle" : ""}`} onClick={() => pick(s)} aria-label={`${s.en}, ${s.es}`}>
-            <ShapeVisual kind={s.kind} />
-            <strong>{s.en}</strong>
-            <small>{s.es}</small>
-          </button>
-        ))}
-      </section>
-      <SoftToast show={!!toast} emoji={toast?.emoji} title={toast?.title ?? ""} variant="sparkle" />
+
+        <div className="color-ground-choices" aria-label="Shapes">
+          {choices.map((s, i) => {
+            const slot = GROUND_SLOTS[i] || GROUND_SLOTS[0];
+            return (
+              <button
+                key={s.id}
+                type="button"
+                className={`env-color-choice ${wiggleId === s.id ? "is-wiggle" : ""}`}
+                style={{ left: `${slot.x * 100}%`, top: `${slot.y * 100}%` }}
+                onClick={() => pick(s)}
+                aria-label={`${s.en}, ${s.es}`}
+              >
+                <span className="env-choice-shadow" aria-hidden />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img className="env-prop-img" src={SHAPE_STONE_ART[s.kind]} alt="" draggable={false} />
+                <span className="env-choice-label env-choice-label-lg">
+                  <strong>{s.en}</strong>
+                  <small>{s.es}</small>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <SoftToast show={!!toast} title={toast?.title ?? ""} variant="sparkle" />
     </ActivityShell>
   );
 }

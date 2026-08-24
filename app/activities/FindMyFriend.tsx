@@ -6,9 +6,10 @@ import { ActivityShell } from "../components/ActivityShell";
 import { CharacterSprite } from "../components/game/SceneKit";
 import { SoftToast } from "../components/SoftToast";
 import { characterArtId } from "../game/assets";
-import { GARDEN_ANIMALS, type GardenAnimalId } from "../data/gardenAnimals";
+import { GARDEN_ANIMALS, spanishElLa, type GardenAnimalId } from "../data/gardenAnimals";
 import { friendById } from "../data/friends";
 import { pickChoices, shuffle, type RewardResult } from "../data/collection";
+import { findFriendPrompt } from "../data/activityLogic.mjs";
 import type { ActivityCommonProps } from "./types";
 
 const ROUNDS = 6;
@@ -40,10 +41,8 @@ export function FindMyFriendActivity(props: ActivityCommonProps) {
   const complete = stars >= ROUNDS;
 
   const prompt = useCallback(() => {
-    props.voice.speak(
-      `Find the ${target.en.toLowerCase()}.`,
-      `Encuentra el ${target.es.toLowerCase()}.`,
-    );
+    const p = findFriendPrompt(target.en, target.es, target.gender);
+    props.voice.speak(p.en, p.es);
   }, [props.voice, target]);
 
   useEffect(() => {
@@ -154,7 +153,9 @@ export function FindMyFriendActivity(props: ActivityCommonProps) {
       <div className="animal-meadow" data-find-v5="meadow-three">
         <div className="painted-prompt-sign meadow-prompt" role="status">
           <p className="painted-prompt-line">Find the {target.en}</p>
-          <p className="painted-prompt-line es">Encuentra el {target.es}</p>
+          <p className="painted-prompt-line es">
+            Encuentra {spanishElLa(target.gender)} {target.es}
+          </p>
         </div>
 
         <div className="meadow-choices" aria-label="Friends">

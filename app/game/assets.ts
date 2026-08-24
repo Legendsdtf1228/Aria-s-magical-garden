@@ -13,7 +13,21 @@ export type SceneId =
   | "color-flower-patch-portrait"
   | "counting-pond-landscape"
   | "counting-pond-portrait"
-  | "counting-pond";
+  | "counting-pond"
+  | "picnic-meadow-landscape"
+  | "picnic-meadow-portrait"
+  | "sound-grove-landscape"
+  | "sound-grove-portrait"
+  | "shape-meadow-landscape"
+  | "shape-meadow-portrait"
+  | "care-beds-landscape"
+  | "care-beds-portrait"
+  | "freeplay-path-landscape"
+  | "freeplay-path-portrait"
+  | "music-gazebo-landscape"
+  | "music-gazebo-portrait"
+  | "friends-yard-landscape"
+  | "friends-yard-portrait";
 
 export type FriendSpriteId =
   | "butterfly"
@@ -83,6 +97,76 @@ export const SCENE_ART: Record<SceneId, { src: string; alt: string; creaturesAll
     alt: "Garden pond environment",
     creaturesAllowed: false,
   },
+  "picnic-meadow-landscape": {
+    src: "/art/scenes/picnic-meadow-landscape.webp",
+    alt: "Empty picnic meadow",
+    creaturesAllowed: false,
+  },
+  "picnic-meadow-portrait": {
+    src: "/art/scenes/picnic-meadow-portrait.webp",
+    alt: "Empty picnic meadow for phones",
+    creaturesAllowed: false,
+  },
+  "sound-grove-landscape": {
+    src: "/art/scenes/sound-grove-landscape.webp",
+    alt: "Empty sound grove",
+    creaturesAllowed: false,
+  },
+  "sound-grove-portrait": {
+    src: "/art/scenes/sound-grove-portrait.webp",
+    alt: "Empty sound grove for phones",
+    creaturesAllowed: false,
+  },
+  "shape-meadow-landscape": {
+    src: "/art/scenes/shape-meadow-landscape.webp",
+    alt: "Empty shape meadow",
+    creaturesAllowed: false,
+  },
+  "shape-meadow-portrait": {
+    src: "/art/scenes/shape-meadow-portrait.webp",
+    alt: "Empty shape meadow for phones",
+    creaturesAllowed: false,
+  },
+  "care-beds-landscape": {
+    src: "/art/scenes/care-beds-landscape.webp",
+    alt: "Empty garden care beds",
+    creaturesAllowed: false,
+  },
+  "care-beds-portrait": {
+    src: "/art/scenes/care-beds-portrait.webp",
+    alt: "Empty garden care beds for phones",
+    creaturesAllowed: false,
+  },
+  "freeplay-path-landscape": {
+    src: "/art/scenes/freeplay-path-landscape.webp",
+    alt: "Empty free-play garden path",
+    creaturesAllowed: false,
+  },
+  "freeplay-path-portrait": {
+    src: "/art/scenes/freeplay-path-portrait.webp",
+    alt: "Empty free-play garden path for phones",
+    creaturesAllowed: false,
+  },
+  "music-gazebo-landscape": {
+    src: "/art/scenes/music-gazebo-landscape.webp",
+    alt: "Empty music gazebo garden",
+    creaturesAllowed: false,
+  },
+  "music-gazebo-portrait": {
+    src: "/art/scenes/music-gazebo-portrait.webp",
+    alt: "Empty music gazebo garden for phones",
+    creaturesAllowed: false,
+  },
+  "friends-yard-landscape": {
+    src: "/art/scenes/friends-yard-landscape.webp",
+    alt: "Empty animal friends yard",
+    creaturesAllowed: false,
+  },
+  "friends-yard-portrait": {
+    src: "/art/scenes/friends-yard-portrait.webp",
+    alt: "Empty animal friends yard for phones",
+    creaturesAllowed: false,
+  },
 };
 
 const sprite = (id: FriendSpriteId, alt: string) =>
@@ -112,6 +196,69 @@ export const PLAY_GATE_ART = "/art/characters/painted-garden-v1/play-gate.webp";
 export const CAST_SHEET = {
   src: "/art/characters/painted-garden-v1/cast-sheet.webp",
   characterSetVersion: CHARACTER_SET_VERSION,
+};
+
+/** Per-color painted props — never recolor with washes. */
+export const COLOR_PROP_ART: Record<string, string> = {
+  red: "/art/objects/color-prop-red.webp",
+  blue: "/art/objects/color-prop-blue.webp",
+  yellow: "/art/objects/color-prop-yellow.webp",
+  green: "/art/objects/color-prop-green.webp",
+  purple: "/art/objects/color-prop-purple.webp",
+  orange: "/art/objects/color-prop-orange.webp",
+  pink: "/art/objects/color-prop-pink.webp",
+  brown: "/art/objects/color-prop-brown.webp",
+  black: "/art/objects/color-prop-black.webp",
+  white: "/art/objects/color-prop-white.webp",
+};
+
+export const FOOD_PROP_ART: Record<string, string> = {
+  carrot: "/art/objects/food-carrot.webp",
+  bone: "/art/objects/food-bone.webp",
+  fish: "/art/objects/food-fish.webp",
+  seeds: "/art/objects/food-seeds.webp",
+  fly: "/art/objects/food-fly.webp",
+  flower: "/art/objects/food-flower.webp",
+  berry: "/art/objects/food-berry.webp",
+  leaf: "/art/objects/food-leaf.webp",
+};
+
+export const SHAPE_STONE_ART: Record<string, string> = {
+  circle: "/art/objects/shape-circle.webp",
+  square: "/art/objects/shape-square.webp",
+  triangle: "/art/objects/shape-triangle.webp",
+  star: "/art/objects/shape-star.webp",
+  heart: "/art/objects/shape-heart.webp",
+  oval: "/art/objects/shape-oval.webp",
+};
+
+export const CARE_TOOL_ART: Record<string, string> = {
+  water: "/art/objects/tool-water.webp",
+  sun: "/art/objects/tool-sun.webp",
+  grow: "/art/objects/tool-grow.webp",
+  visit: "/art/objects/tool-visit.webp",
+};
+
+export const MUSIC_CUE_ART: Record<string, string> = {
+  clap: "/art/objects/music-clap.webp",
+  stomp: "/art/objects/music-stomp.webp",
+  spin: "/art/objects/music-spin.webp",
+  jump: "/art/objects/music-jump.webp",
+  wiggle: "/art/objects/music-wiggle.webp",
+  freeze: "/art/objects/music-freeze.webp",
+};
+
+export const MAP_LANDMARK_ART: Record<string, string> = {
+  colors: "/art/landmarks/landmark-colors.webp",
+  feed: "/art/landmarks/landmark-feed.webp",
+  findFriend: "/art/landmarks/landmark-findFriend.webp",
+  animalSounds: "/art/landmarks/landmark-animalSounds.webp",
+  gardenCare: "/art/landmarks/landmark-gardenCare.webp",
+  freePlay: "/art/landmarks/landmark-freePlay.webp",
+  shapes: "/art/landmarks/landmark-shapes.webp",
+  counting: "/art/landmarks/landmark-counting.webp",
+  music: "/art/landmarks/landmark-music.webp",
+  animals: "/art/landmarks/landmark-animals.webp",
 };
 
 export function characterArtId(friendId: string): CharacterArtId {

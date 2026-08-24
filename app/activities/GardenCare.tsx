@@ -3,18 +3,19 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ActivityComplete } from "../components/ActivityComplete";
 import { ActivityShell } from "../components/ActivityShell";
-import { GardenAnimal } from "../components/GardenAnimal";
+import { CharacterSprite } from "../components/game/SceneKit";
 import { SoftToast } from "../components/SoftToast";
 import { shuffle } from "../data/collection";
 import { friendById } from "../data/friends";
 import type { RewardResult } from "../data/collectionTypes";
+import { CARE_TOOL_ART, characterArtId } from "../game/assets";
 import type { ActivityCommonProps } from "./types";
 
 const ALL_TOOLS = [
-  { id: "water", label: "Water", es: "Agua", icon: "💧" },
-  { id: "sun", label: "Sunshine", es: "Sol", icon: "☀️" },
-  { id: "grow", label: "Grow", es: "Crecer", icon: "🪴" },
-  { id: "visit", label: "Friends", es: "Amigos", icon: "🦋" },
+  { id: "water", label: "Water", es: "Agua" },
+  { id: "sun", label: "Sunshine", es: "Sol" },
+  { id: "grow", label: "Grow", es: "Crecer" },
+  { id: "visit", label: "Friends", es: "Amigos" },
 ] as const;
 
 const STEPS = [
@@ -23,6 +24,12 @@ const STEPS = [
   { id: "grow", en: "Help them grow", es: "Ayúdalas a crecer", need: "grow" },
   { id: "visit", en: "Welcome garden friends", es: "Recibe a los amigos", need: "visit" },
 ] as const;
+
+const TOOL_SLOTS = [
+  { x: 0.2, y: 0.86 },
+  { x: 0.5, y: 0.88 },
+  { x: 0.8, y: 0.86 },
+];
 
 export function GardenCareActivity(props: ActivityCommonProps) {
   const [step, setStep] = useState(0);
@@ -92,45 +99,96 @@ export function GardenCareActivity(props: ActivityCommonProps) {
 
   if (complete) {
     return (
-      <ActivityShell activityId="gardenCare" stars={stars} starsNeeded={STEPS.length} collected={props.collected} busy speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onOpenSettings={props.onOpenSettings} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch}>
-        <ActivityComplete titleEn="Your garden is blooming!" titleEs="¡Tu jardín florece!" stars={stars} reward={lastReward} onAgain={() => { setStep(0); setStars(0); setGrown(false); setVisitors(false); props.voice.speak("Want to play again?", "¿Quieres jugar otra vez?", "playAgain"); }} onHome={props.onHome} />
+      <ActivityShell
+        activityId="gardenCare"
+        stars={stars}
+        starsNeeded={STEPS.length}
+        collected={props.collected}
+        busy
+        speechOn={props.speechOn}
+        onToggleSpeech={props.onToggleSpeech}
+        onOpenSettings={props.onOpenSettings}
+        onHomeRequest={props.onHomeRequest}
+        onCatchFriend={onCatch}
+      >
+        <ActivityComplete
+          titleEn="Your garden is blooming!"
+          titleEs="¡Tu jardín florece!"
+          stars={stars}
+          reward={lastReward}
+          onAgain={() => {
+            setStep(0);
+            setStars(0);
+            setGrown(false);
+            setVisitors(false);
+            props.voice.speak("Want to play again?", "¿Quieres jugar otra vez?", "playAgain");
+          }}
+          onHome={props.onHome}
+        />
       </ActivityShell>
     );
   }
 
   return (
-    <ActivityShell activityId="gardenCare" stars={stars} starsNeeded={STEPS.length} collected={props.collected} catchingId={catchingId} busy={busy} speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onOpenSettings={props.onOpenSettings} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch} onRepeat={prompt}>
-      <section className="prompt">
-        <p>Garden care • Cuidar el jardín</p>
-        <button type="button" onClick={prompt} style={{ ["--target" as string]: "#7ec86a" }}>
-          <span>{current.en}</span><b>•</b><span>{current.es}</span>
-        </button>
-      </section>
-      <div className={`care-plot ${grown ? "grown" : ""}`} aria-label="Garden plot">
-        {visitors ? (
-          <div style={{ display: "flex", gap: 8 }}>
-            <GardenAnimal id="butterfly" pose="move" size={72} />
-            <GardenAnimal id="bee" pose="move" size={72} />
-          </div>
-        ) : grown ? (
-          "🌸🌼🌺"
-        ) : (
-          "🌱🌱🌱"
-        )}
+    <ActivityShell
+      activityId="gardenCare"
+      stars={stars}
+      starsNeeded={STEPS.length}
+      collected={props.collected}
+      catchingId={catchingId}
+      busy={busy}
+      speechOn={props.speechOn}
+      onToggleSpeech={props.onToggleSpeech}
+      onOpenSettings={props.onOpenSettings}
+      onHomeRequest={props.onHomeRequest}
+      onCatchFriend={onCatch}
+      onRepeat={prompt}
+    >
+      <div className="care-beds-scene" data-care-v5="painted">
+        <div className="painted-prompt-sign meadow-prompt" role="status">
+          <p className="painted-prompt-line">{current.en}</p>
+          <p className="painted-prompt-line es">{current.es}</p>
+        </div>
+
+        <div className={`care-plot-painted ${grown ? "is-grown" : ""}`} aria-label="Garden plot">
+          {visitors ? (
+            <div className="care-visitors">
+              <CharacterSprite id={characterArtId("butterfly")} size={100} pose="celebrate" title="Butterfly" />
+              <CharacterSprite id={characterArtId("bee")} size={100} pose="celebrate" title="Bee" />
+            </div>
+          ) : grown ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img className="care-plot-img" src={CARE_TOOL_ART.grow} alt="" draggable={false} />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img className="care-plot-img is-seed" src={CARE_TOOL_ART.grow} alt="" draggable={false} />
+          )}
+        </div>
+
+        <div className="care-tool-row" aria-label="Garden tools">
+          {toolChoices.map((t, i) => {
+            const slot = TOOL_SLOTS[i] || TOOL_SLOTS[0];
+            return (
+              <button
+                key={t.id}
+                type="button"
+                className="care-tool-painted"
+                style={{ left: `${slot.x * 100}%`, top: `${slot.y * 100}%` }}
+                onClick={() => advance(t.id)}
+                aria-label={`${t.label}, ${t.es}`}
+              >
+                <span className="env-choice-shadow" aria-hidden />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img className="care-tool-img" src={CARE_TOOL_ART[t.id]} alt="" draggable={false} />
+                <span className="env-choice-label env-choice-label-lg">
+                  <strong>{t.label}</strong>
+                  <small>{t.es}</small>
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
-      <section className="care-row" aria-label="Garden tools">
-        {toolChoices.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            className="care-tool"
-            onClick={() => advance(t.id)}
-            aria-label={`${t.label}, ${t.es}`}
-          >
-            {t.icon}
-          </button>
-        ))}
-      </section>
       <SoftToast show={!!toast} title={toast?.title ?? ""} variant="sparkle" />
     </ActivityShell>
   );

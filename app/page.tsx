@@ -48,7 +48,7 @@ export default function Home() {
   const [transitioningTo, setTransitioningTo] = useState<ActivityId | null>(null);
   const [settingsReturn, setSettingsReturn] = useState<Screen>("hub");
 
-  // Production review capture: ?review=welcome|hub|findFriend|colors|counting
+  // Production review capture: ?review=welcome|hub|<activityId>
   // Optional: &frogs=4 forces Counting Pond target value for visual proof
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -65,8 +65,20 @@ export default function Home() {
       setActivity(null);
       return;
     }
-    if (q === "findFriend" || q === "colors" || q === "counting") {
-      setActivity(q);
+    const activities = [
+      "findFriend",
+      "colors",
+      "counting",
+      "feed",
+      "animalSounds",
+      "shapes",
+      "gardenCare",
+      "freePlay",
+      "music",
+      "animals",
+    ] as const;
+    if ((activities as readonly string[]).includes(q)) {
+      setActivity(q as ActivityId);
       setScreen("activity");
     }
   }, []);

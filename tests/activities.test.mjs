@@ -60,6 +60,12 @@ test("find-friend bilingual prompt names both languages", () => {
   const p = findFriendPrompt("Bunny", "Conejito");
   assert.match(p.en, /bunny/i);
   assert.match(p.es, /conejito/i);
+  assert.match(p.es, /Encuentra el /);
+});
+
+test("find-friend Spanish uses feminine article for abejita", () => {
+  const p = findFriendPrompt("Bee", "Abejita", "f");
+  assert.equal(p.es, "Encuentra la abejita.");
 });
 
 test("feed logic accepts only matching food for each garden animal", () => {

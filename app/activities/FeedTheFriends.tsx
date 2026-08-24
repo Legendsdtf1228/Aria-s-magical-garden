@@ -3,25 +3,26 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityComplete } from "../components/ActivityComplete";
 import { ActivityShell } from "../components/ActivityShell";
-import { GardenAnimal } from "../components/GardenAnimal";
+import { CharacterSprite } from "../components/game/SceneKit";
 import { SoftToast } from "../components/SoftToast";
-import { GARDEN_ANIMALS, type AnimalPose, type GardenAnimalId } from "../data/gardenAnimals";
+import { GARDEN_ANIMALS, spanishAlALa, type AnimalPose, type GardenAnimalId } from "../data/gardenAnimals";
 import { friendById } from "../data/friends";
 import { shuffle, type RewardResult } from "../data/collection";
+import { characterArtId, FOOD_PROP_ART } from "../game/assets";
 import type { ActivityCommonProps } from "./types";
 
 const ROUNDS = 6;
 
-const FOOD_EMOJI: Record<string, string> = {
-  carrot: "🥕",
-  bone: "🦴",
-  fish: "🐟",
-  seeds: "🌾",
-  fly: "🪰",
-  flower: "🌼",
-  berry: "🫐",
-  leaf: "🍃",
-};
+const STAGE_SLOTS = [
+  { x: 0.32, y: 0.62 },
+  { x: 0.68, y: 0.62 },
+];
+
+const FOOD_SLOTS = [
+  { x: 0.22, y: 0.88 },
+  { x: 0.5, y: 0.9 },
+  { x: 0.78, y: 0.88 },
+];
 
 export function FeedTheFriendsActivity(props: ActivityCommonProps) {
   const [round, setRound] = useState(0);
@@ -43,7 +44,7 @@ export function FeedTheFriendsActivity(props: ActivityCommonProps) {
   const prompt = useCallback(() => {
     props.voice.speak(
       `Can you feed the ${target.en.toLowerCase()}?`,
-      `¿Puedes alimentar al ${target.es.toLowerCase()}?`,
+      `¿Puedes alimentar ${spanishAlALa(target.gender)} ${target.es.toLowerCase()}?`,
       "feedFriend",
     );
   }, [props.voice, target]);
@@ -80,7 +81,9 @@ export function FeedTheFriendsActivity(props: ActivityCommonProps) {
     setPoses({ [animalId]: "eat" });
     props.voice.speak(
       `Yum! The ${animal.en} loves ${animal.food.en}.`,
-      `¡Ñam! Al ${animal.es} le encanta.`,
+      animal.gender === "f"
+        ? `¡Ñam! A la ${animal.es.toLowerCase()} le encanta.`
+        : `¡Ñam! Al ${animal.es.toLowerCase()} le encanta.`,
     );
     const reward = props.onAward();
     setLastReward(reward);
@@ -114,65 +117,128 @@ export function FeedTheFriendsActivity(props: ActivityCommonProps) {
     setTimeout(() => setCatchingId(null), 1200);
   };
 
+  const spriteSize =
+    typeof window !== "undefined"
+      ? Math.round(Math.min(220, Math.max(130, window.innerHeight * 0.22)))
+      : 160;
+
   if (complete) {
     return (
-      <ActivityShell activityId="feed" stars={stars} starsNeeded={ROUNDS} collected={props.collected} busy speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onOpenSettings={props.onOpenSettings} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch}>
-        <ActivityComplete titleEn="Everyone is happily fed!" titleEs="¡Todos están felices!" stars={stars} reward={lastReward} onAgain={() => { setOrder(shuffle(GARDEN_ANIMALS)); setStars(0); setRound(0); props.voice.speak("Want to play again?", "¿Quieres jugar otra vez?", "playAgain"); }} onHome={props.onHome} />
+      <ActivityShell
+        activityId="feed"
+        stars={stars}
+        starsNeeded={ROUNDS}
+        collected={props.collected}
+        busy
+        speechOn={props.speechOn}
+        onToggleSpeech={props.onToggleSpeech}
+        onOpenSettings={props.onOpenSettings}
+        onHomeRequest={props.onHomeRequest}
+        onCatchFriend={onCatch}
+      >
+        <ActivityComplete
+          titleEn="Everyone is happily fed!"
+          titleEs="¡Todos están felices!"
+          stars={stars}
+          reward={lastReward}
+          onAgain={() => {
+            setOrder(shuffle(GARDEN_ANIMALS));
+            setStars(0);
+            setRound(0);
+            props.voice.speak("Want to play again?", "¿Quieres jugar otra vez?", "playAgain");
+          }}
+          onHome={props.onHome}
+        />
       </ActivityShell>
     );
   }
 
   return (
-    <ActivityShell activityId="feed" stars={stars} starsNeeded={ROUNDS} collected={props.collected} catchingId={catchingId} busy={busy} speechOn={props.speechOn} onToggleSpeech={props.onToggleSpeech} onOpenSettings={props.onOpenSettings} onHomeRequest={props.onHomeRequest} onCatchFriend={onCatch} onRepeat={prompt}>
-      <section className="prompt">
-        <p>Feed the friends • Alimenta a los amigos</p>
-        <button type="button" onClick={prompt} style={{ ["--target" as string]: "#ffb347" }}>
-          <span>{target.en}</span><b>•</b><span>{target.es}</span>
-        </button>
-      </section>
-      <section className="feed-stage" aria-label="Hungry friends">
-        {stageAnimals.map((a) => (
-          <div
-            key={a.id}
-            className={`feed-drop ${overId === a.id ? "over" : ""}`}
-            onDragOver={(e) => {
-              e.preventDefault();
-              setOverId(a.id);
-            }}
-            onDragLeave={() => setOverId(null)}
-            onDrop={(e) => {
-              e.preventDefault();
-              setOverId(null);
-              const kind = e.dataTransfer.getData("food");
-              if (kind) tryFeed(a.id, kind);
-            }}
-          >
-            <GardenAnimal id={a.id} pose={poses[a.id] || "idle"} size={110} />
-            <strong>{a.en}</strong>
-            <small>{a.es}</small>
-          </div>
-        ))}
-      </section>
-      <section className="food-tray" aria-label="Food">
-        {foodList.map((f) => (
-          <button
-            key={f.kind + f.en}
-            type="button"
-            className={`food-token ${bounceFood === f.kind ? "bounce-back" : ""}`}
-            draggable
-            onDragStart={(e) => e.dataTransfer.setData("food", f.kind)}
-            onClick={() => {
-              // Tap fallback: feed the target animal if this is the correct food
-              tryFeed(target.id, f.kind);
-            }}
-            aria-label={`${f.en}, ${f.es}`}
-          >
-            <span className="food-art">{FOOD_EMOJI[f.kind] || "🍽️"}</span>
-            <strong>{f.en}</strong>
-            <small>{f.es}</small>
-          </button>
-        ))}
-      </section>
+    <ActivityShell
+      activityId="feed"
+      stars={stars}
+      starsNeeded={ROUNDS}
+      collected={props.collected}
+      catchingId={catchingId}
+      busy={busy}
+      speechOn={props.speechOn}
+      onToggleSpeech={props.onToggleSpeech}
+      onOpenSettings={props.onOpenSettings}
+      onHomeRequest={props.onHomeRequest}
+      onCatchFriend={onCatch}
+      onRepeat={prompt}
+    >
+      <div className="picnic-feed-scene" data-feed-v5="painted">
+        <div className="painted-prompt-sign meadow-prompt" role="status">
+          <p className="painted-prompt-line">Feed the {target.en}</p>
+          <p className="painted-prompt-line es">
+            Alimenta {spanishAlALa(target.gender)} {target.es}
+          </p>
+        </div>
+
+        <div className="picnic-friends" aria-label="Hungry friends">
+          {stageAnimals.map((a, i) => {
+            const slot = STAGE_SLOTS[i] || STAGE_SLOTS[0];
+            return (
+              <div
+                key={a.id}
+                className={`picnic-friend ${overId === a.id ? "is-over" : ""}`}
+                style={{ left: `${slot.x * 100}%`, top: `${slot.y * 100}%` }}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setOverId(a.id);
+                }}
+                onDragLeave={() => setOverId(null)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setOverId(null);
+                  const kind = e.dataTransfer.getData("food");
+                  if (kind) tryFeed(a.id, kind);
+                }}
+              >
+                <span className="meadow-animal-shadow" aria-hidden />
+                <CharacterSprite
+                  id={characterArtId(a.id)}
+                  size={spriteSize}
+                  pose={poses[a.id] === "celebrate" ? "celebrate" : poses[a.id] === "eat" ? "tap" : "idle"}
+                  title={`${a.en} ${a.es}`}
+                />
+                <span className="env-choice-label env-choice-label-lg">
+                  <strong>{a.en}</strong>
+                  <small>{a.es}</small>
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="picnic-foods" aria-label="Food">
+          {foodList.map((f, i) => {
+            const slot = FOOD_SLOTS[i] || FOOD_SLOTS[0];
+            const src = FOOD_PROP_ART[f.kind];
+            return (
+              <button
+                key={f.kind + f.en}
+                type="button"
+                className={`picnic-food ${bounceFood === f.kind ? "is-wiggle" : ""}`}
+                style={{ left: `${slot.x * 100}%`, top: `${slot.y * 100}%` }}
+                draggable
+                onDragStart={(e) => e.dataTransfer.setData("food", f.kind)}
+                onClick={() => tryFeed(target.id, f.kind)}
+                aria-label={`${f.en}, ${f.es}`}
+              >
+                <span className="env-choice-shadow" aria-hidden />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img className="picnic-food-img" src={src} alt="" draggable={false} />
+                <span className="env-choice-label env-choice-label-lg">
+                  <strong>{f.en}</strong>
+                  <small>{f.es}</small>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
       <SoftToast show={!!toast} title={toast?.title ?? ""} variant="friend" />
     </ActivityShell>
   );

@@ -8,6 +8,7 @@ import { COLORS } from "../data/catalog";
 import { friendById } from "../data/friends";
 import { pickChoices, shuffle } from "../data/collection";
 import type { RewardResult } from "../data/collectionTypes";
+import { COLOR_PROP_ART } from "../game/assets";
 import type { ColorItem } from "../types/game";
 import type { ActivityCommonProps } from "./types";
 
@@ -25,28 +26,6 @@ const FIND_KEY: Record<string, string> = {
   brown: "findBrown",
   black: "findBlack",
   white: "findWhite",
-};
-
-type PropKind = "pot" | "can" | "bed" | "boots";
-
-const COLOR_KIND: Record<string, PropKind> = {
-  red: "pot",
-  blue: "can",
-  yellow: "bed",
-  green: "bed",
-  purple: "pot",
-  orange: "can",
-  pink: "boots",
-  brown: "pot",
-  black: "boots",
-  white: "can",
-};
-
-const PROP_SRC: Record<PropKind, string> = {
-  pot: "/art/objects/flower-pot.webp",
-  can: "/art/objects/watering-can.webp",
-  bed: "/art/objects/flower-bed.webp",
-  boots: "/art/objects/garden-boots.webp",
 };
 
 const GROUND_SLOTS = [
@@ -76,7 +55,7 @@ export function ColorGardenActivity(props: ActivityCommonProps) {
 
   const prompt = useCallback(() => {
     const key = FIND_KEY[target.id] ?? "findColor";
-    props.voice.speak(`Find ${target.en}.`, `Encuentra ${target.es}.`, key);
+    props.voice.speak(`Find ${target.en}.`, `Encuentra el ${target.es.toLowerCase()}.`, key);
   }, [props.voice, target]);
 
   useEffect(() => {
@@ -187,23 +166,21 @@ export function ColorGardenActivity(props: ActivityCommonProps) {
       onCatchFriend={onCatch}
       onRepeat={prompt}
     >
-      <div className="color-flower-patch" data-color-v5="env-props">
+      <div className="color-flower-patch" data-color-v5="painted-props">
         <div className="painted-prompt-sign color-patch-sign" role="status">
-          <p className="painted-prompt-line">
-            Find {target.en} <span aria-hidden>•</span> {target.es}
-          </p>
+          <p className="painted-prompt-line">Find {target.en}</p>
           <p className="painted-prompt-line es">Encuentra el {target.es}</p>
         </div>
 
         <div className="color-ground-choices" aria-label="Color choices">
           {choices.map((c, i) => {
-            const kind = COLOR_KIND[c.id] || "pot";
             const slot = GROUND_SLOTS[i] || GROUND_SLOTS[0];
+            const src = COLOR_PROP_ART[c.id];
             return (
               <button
                 key={c.id}
                 type="button"
-                className={`env-color-choice kind-${kind} ${wiggleId === c.id ? "is-wiggle" : ""} ${bloomId === c.id ? "is-bloom" : ""}`}
+                className={`env-color-choice ${wiggleId === c.id ? "is-wiggle" : ""} ${bloomId === c.id ? "is-bloom" : ""}`}
                 style={{
                   left: `${slot.x * 100}%`,
                   top: `${slot.y * 100}%`,
@@ -214,10 +191,9 @@ export function ColorGardenActivity(props: ActivityCommonProps) {
               >
                 <span className="env-choice-shadow" aria-hidden />
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="env-prop-img" src={PROP_SRC[kind]} alt="" draggable={false} />
-                <span className="env-color-wash" aria-hidden />
+                <img className="env-prop-img" src={src} alt="" draggable={false} />
                 {bloomId === c.id && <span className="env-petal-swirl" aria-hidden />}
-                <span className="env-choice-label">
+                <span className="env-choice-label env-choice-label-lg">
                   <strong>{c.en}</strong>
                   <small>{c.es}</small>
                 </span>

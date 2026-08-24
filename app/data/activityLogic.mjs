@@ -32,10 +32,12 @@ export function bilingualParts(en, es, mode = "both") {
   return parts;
 }
 
-export function findFriendPrompt(enName, esName) {
+/** gender: "m" | "f" — feminine nouns use la (e.g. Encuentra la abejita). */
+export function findFriendPrompt(enName, esName, gender = "m") {
+  const art = gender === "f" ? "la" : "el";
   return {
     en: `Find the ${enName.toLowerCase()}.`,
-    es: `Encuentra el ${esName.toLowerCase()}.`,
+    es: `Encuentra ${art} ${esName.toLowerCase()}.`,
   };
 }
 
