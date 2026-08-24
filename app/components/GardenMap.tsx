@@ -134,20 +134,28 @@ export function GardenMap({
         <div className="map-ui-parent">
           <ParentGateFlower onOpen={onOpenSettings} />
         </div>
-        <TouchSafeButton
-          className="map-ui-arrow left"
-          aria-label="Look left"
-          onClick={() => pan("left")}
-        >
-          ◀
-        </TouchSafeButton>
-        <TouchSafeButton
-          className="map-ui-arrow right"
-          aria-label="Look right"
-          onClick={() => pan("right")}
-        >
-          ▶
-        </TouchSafeButton>
+        <div className="map-nav-gutter left" aria-hidden={false}>
+          <TouchSafeButton
+            className="map-ui-arrow left"
+            aria-label="Look left"
+            onClick={() => pan("left")}
+          >
+            <span className="map-arrow-glyph" aria-hidden>
+              ◀
+            </span>
+          </TouchSafeButton>
+        </div>
+        <div className="map-nav-gutter right">
+          <TouchSafeButton
+            className="map-ui-arrow right"
+            aria-label="Look right"
+            onClick={() => pan("right")}
+          >
+            <span className="map-arrow-glyph" aria-hidden>
+              ▶
+            </span>
+          </TouchSafeButton>
+        </div>
       </div>
     </main>
   );

@@ -1,15 +1,9 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityComplete } from "../components/ActivityComplete";
-import {
-  CelebrationEffect,
-  CharacterSprite,
-  ChildGameControls,
-  SceneBackground,
-  SpokenPrompt,
-  TouchSafeButton,
-} from "../components/game/SceneKit";
+import { ActivityShell } from "../components/ActivityShell";
+import { CharacterSprite } from "../components/game/SceneKit";
 import { SoftToast } from "../components/SoftToast";
 import { NUMBERS } from "../data/catalog";
 import { friendById } from "../data/friends";
@@ -25,28 +19,90 @@ const ROUNDS = 5;
 const EN_COUNT = ["One", "Two", "Three", "Four", "Five"];
 const ES_COUNT = ["Uno", "Dos", "Tres", "Cuatro", "Cinco"];
 
+/** Frog lily pads in scene — feet anchors (normalized). */
+const FROG_PADS = [
+  { x: 0.22, y: 0.58 },
+  { x: 0.38, y: 0.52 },
+  { x: 0.54, y: 0.56 },
+  { x: 0.68, y: 0.5 },
+  { x: 0.82, y: 0.54 },
+];
+
+/** Shore launch points near pond edge. */
+const EDGE_LAUNCH = [
+  { x: 0.08, y: 0.72 },
+  { x: 0.12, y: 0.68 },
+  { x: 0.9, y: 0.7 },
+  { x: 0.88, y: 0.74 },
+  { x: 0.06, y: 0.66 },
+];
+
+type FrogVisual = {
+  /** Fully landed on pad (stays visible). */
+  landed: boolean;
+  /** Currently hopping. */
+  hopping: boolean;
+  /** Ripple after land. */
+  ripple: boolean;
+  /** Celebrate on correct answer. */
+  celebrate: boolean;
+  x: number;
+  y: number;
+  lift: number;
+};
+
+function emptyFrogs(n: number): FrogVisual[] {
+  return Array.from({ length: n }, (_, i) => ({
+    landed: false,
+    hopping: false,
+    ripple: false,
+    celebrate: false,
+    x: EDGE_LAUNCH[i % EDGE_LAUNCH.length].x,
+    y: EDGE_LAUNCH[i % EDGE_LAUNCH.length].y,
+    lift: 0,
+  }));
+}
+
+function readReviewFrogs(): number {
+  if (typeof window === "undefined") return 0;
+  return Number(new URLSearchParams(window.location.search).get("frogs") || 0);
+}
+
 /**
- * Milestone-2 Counting Pond — illustrated pond, full-body frogs,
- * protected sequential bilingual count (EN fully, then ES).
+ * Full-bleed Counting Pond.
+ * Speech order preserved via runCountSequence (EN then ES).
+ * Visual: each frog hops shore → pad, lands, ripple, THEN number speaks.
  */
 export function CountingPondActivity(props: ActivityCommonProps) {
   const [round, setRound] = useState(0);
   const [stars, setStars] = useState(0);
   const [order, setOrder] = useState(() => shuffle(NUMBERS.filter((n) => n.value <= 3)));
   const [choices, setChoices] = useState<NumberItem[]>([]);
-  const [highlight, setHighlight] = useState(-1);
+  const [frogs, setFrogs] = useState<FrogVisual[]>([]);
+  const [glowPad, setGlowPad] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [counting, setCounting] = useState(false);
-  const [splash, setSplash] = useState(false);
   const [wiggleId, setWiggleId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ title: string } | null>(null);
   const [catchingId, setCatchingId] = useState<string | null>(null);
   const [lastReward, setLastReward] = useState<RewardResult | null>(null);
-  const [celebrate, setCelebrate] = useState(false);
   const seq = useRef(new SequenceController());
   const guard = useRef(new InputGuard({ debounceMs: 450 }));
+  const animGate = useRef<Promise<void>>(Promise.resolve());
+  const hoppedRef = useRef<Set<number>>(new Set());
+  const [reviewForce, setReviewForce] = useState(0);
+  const [reviewParamsReady, setReviewParamsReady] = useState(false);
+  useEffect(() => {
+    setReviewForce(readReviewFrogs());
+    setReviewParamsReady(true);
+  }, []);
   const pool = stars < 2 ? NUMBERS.filter((n) => n.value <= 3) : NUMBERS;
-  const target = pool[round % pool.length] ?? order[round % order.length];
+  /** Review capture: ?frogs=4 forces a four-frog round without changing sequence logic. */
+  const forcedTarget =
+    reviewForce >= 1 && reviewForce <= 5
+      ? NUMBERS.find((n) => n.value === reviewForce) ?? null
+      : null;
+  const target = forcedTarget ?? pool[round % pool.length] ?? order[round % order.length];
   const complete = stars >= ROUNDS;
   const mode = props.languageMode ?? "both";
 
@@ -63,11 +119,73 @@ export function CountingPondActivity(props: ActivityCommonProps) {
     cancelSpeechSynthesis();
     props.voice.cancel();
     setCounting(false);
-    setHighlight(-1);
+    setFrogs((prev) => prev.map((f) => ({ ...f, hopping: false, ripple: false, lift: 0 })));
     guard.current.setLocked(false);
   }, [props.voice]);
 
   useEffect(() => () => cancelSeq(), [cancelSeq]);
+
+  const hopFrogOntoPad = useCallback(async (index: number, isActive: () => boolean) => {
+    const pad = FROG_PADS[index % FROG_PADS.length];
+    const edge = EDGE_LAUNCH[index % EDGE_LAUNCH.length];
+    const steps = 18;
+    const duration = 520;
+    const stepMs = duration / steps;
+
+    setFrogs((prev) => {
+      const next = [...prev];
+      if (!next[index]) return prev;
+      next[index] = {
+        ...next[index],
+        hopping: true,
+        landed: false,
+        ripple: false,
+        x: edge.x,
+        y: edge.y,
+        lift: 0,
+      };
+      return next;
+    });
+
+    for (let s = 1; s <= steps; s++) {
+      if (!isActive()) return;
+      const t = s / steps;
+      const lift = Math.sin(Math.PI * t) * 0.08;
+      const x = edge.x + (pad.x - edge.x) * t;
+      const y = edge.y + (pad.y - edge.y) * t;
+      setFrogs((prev) => {
+        const next = [...prev];
+        if (!next[index]) return prev;
+        next[index] = { ...next[index], x, y, lift, hopping: true };
+        return next;
+      });
+      await new Promise((r) => setTimeout(r, stepMs));
+    }
+
+    if (!isActive()) return;
+    setFrogs((prev) => {
+      const next = [...prev];
+      if (!next[index]) return prev;
+      next[index] = {
+        ...next[index],
+        x: pad.x,
+        y: pad.y,
+        lift: 0,
+        hopping: false,
+        landed: true,
+        ripple: true,
+      };
+      return next;
+    });
+    await new Promise((r) => setTimeout(r, 280));
+    if (!isActive()) return;
+    setFrogs((prev) => {
+      const next = [...prev];
+      if (!next[index]) return prev;
+      next[index] = { ...next[index], ripple: false };
+      return next;
+    });
+  }, []);
 
   const askHowMany = useCallback(() => {
     props.voice.speak("How many frogs?", "¿Cuántas ranas?");
@@ -80,32 +198,56 @@ export function CountingPondActivity(props: ActivityCommonProps) {
     setCounting(true);
     guard.current.setLocked(true);
     setBusy(true);
+    setFrogs(emptyFrogs(target.value));
+    setGlowPad(null);
+    hoppedRef.current = new Set();
+
+    // Track which frog index the upcoming speakOne belongs to (per language pass).
+    let passIndex = 0;
     await runCountSequence({
       count: target.value,
       mode,
       enWords: EN_COUNT,
       esWords: ES_COUNT,
-      speakOne,
       onIndex: (i) => {
-        if (handle.isActive()) setHighlight(i);
+        if (!handle.isActive()) return;
+        if (i < 0) return;
+        passIndex = i;
+        // Hop only once per frog (EN pass). ES pass reuses landed frogs.
+        if (!hoppedRef.current.has(i)) {
+          hoppedRef.current.add(i);
+          animGate.current = hopFrogOntoPad(i, handle.isActive);
+        } else {
+          animGate.current = Promise.resolve();
+        }
+      },
+      speakOne: async (word, lang) => {
+        if (!handle.isActive()) return;
+        await animGate.current;
+        if (!handle.isActive()) return;
+        // Keep all frogs 0..passIndex landed visible (do not clear / reuse one frog)
+        setFrogs((prev) =>
+          prev.map((f, idx) =>
+            idx <= passIndex ? { ...f, landed: true, hopping: false } : f,
+          ),
+        );
+        await speakOne(word, lang);
       },
       isActive: handle.isActive,
-      pauseMs: 160,
+      pauseMs: 120,
     });
+
     if (!handle.isActive()) return;
-    setHighlight(-1);
     setCounting(false);
     setBusy(false);
     guard.current.setLocked(false);
     askHowMany();
-  }, [askHowMany, mode, props.voice, speakOne, target.value]);
+  }, [askHowMany, hopFrogOntoPad, mode, props.voice, speakOne, target.value]);
 
   useEffect(() => {
-    if (complete) return;
+    if (!reviewParamsReady || complete) return;
     setChoices(pickChoices(pool, target, 3));
-    setHighlight(-1);
-    setSplash(false);
-    setCelebrate(false);
+    setGlowPad(null);
     guard.current.reset();
     const timer = setTimeout(() => {
       void playCountThenAsk();
@@ -115,8 +257,9 @@ export function CountingPondActivity(props: ActivityCommonProps) {
       seq.current.cancelAll();
       cancelSpeechSynthesis();
     };
+    // Wait for ?frogs= before starting so review capture does not play a 1-frog round first.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [round, complete, stars]);
+  }, [round, complete, stars, reviewForce, reviewParamsReady, target.value]);
 
   const replay = () => {
     cancelSeq();
@@ -137,11 +280,11 @@ export function CountingPondActivity(props: ActivityCommonProps) {
     }
     guard.current.setLocked(true);
     setBusy(true);
-    setCelebrate(true);
-    setSplash(true);
+    setGlowPad(n.id);
+    setFrogs((prev) => prev.map((f) => ({ ...f, celebrate: true })));
     const reward = props.onAward();
     setLastReward(reward);
-    setToast({ title: `${n.en} frogs! • ¡${n.es} ranas!` });
+    setToast({ title: `${n.en} frogs! · ¡${n.es} ranas!` });
     props.voice.speak(`${n.en} frogs!`, `¡${n.es} ranas!`);
     if (reward.kind === "friend") {
       setCatchingId(reward.id);
@@ -149,10 +292,9 @@ export function CountingPondActivity(props: ActivityCommonProps) {
     } else props.audio.correct();
     setTimeout(() => {
       setBusy(false);
-      setSplash(false);
-      setCelebrate(false);
       setToast(null);
       setCatchingId(null);
+      setGlowPad(null);
       setStars((s) => s + 1);
       setRound((r) => r + 1);
       guard.current.setLocked(false);
@@ -171,8 +313,17 @@ export function CountingPondActivity(props: ActivityCommonProps) {
 
   if (complete) {
     return (
-      <div className="counting-v4 scene-bg">
-        <ChildGameControls onHome={props.onHomeRequest} />
+      <ActivityShell
+        activityId="counting"
+        stars={stars}
+        starsNeeded={ROUNDS}
+        collected={props.collected}
+        busy
+        speechOn={props.speechOn}
+        onHomeRequest={props.onHomeRequest}
+        onCatchFriend={onCatch}
+        onOpenSettings={props.onOpenSettings}
+      >
         <ActivityComplete
           titleEn="You counted so well!"
           titleEs="¡Contaste muy bien!"
@@ -186,65 +337,83 @@ export function CountingPondActivity(props: ActivityCommonProps) {
           }}
           onHome={props.onHome}
         />
-      </div>
+      </ActivityShell>
     );
   }
 
   return (
-    <div className={`counting-v4 ${splash ? "splash" : ""}`}>
-      <ChildGameControls
-        onHome={() => {
-          cancelSeq();
-          props.onHomeRequest();
-        }}
-        onReplay={replay}
-      />
+    <ActivityShell
+      activityId="counting"
+      stars={stars}
+      starsNeeded={ROUNDS}
+      collected={props.collected}
+      catchingId={catchingId}
+      busy={busy}
+      speechOn={props.speechOn}
+      onHomeRequest={() => {
+        cancelSeq();
+        props.onHomeRequest();
+      }}
+      onCatchFriend={onCatch}
+      onOpenSettings={props.onOpenSettings}
+      onRepeat={replay}
+    >
+      <div className="counting-pond-bleed" data-counting-v5="full-bleed">
+        <div className="painted-prompt-sign counting-prompt-sign" role="status">
+          <p className="painted-prompt-line">How many frogs?</p>
+          <p className="painted-prompt-line es">¿Cuántas ranas?</p>
+        </div>
 
-      <div style={{ paddingTop: 88 }}>
-        <SpokenPrompt en="How many frogs?" es="¿Cuántas ranas?" onReplay={replay} />
-      </div>
-
-      <div className="pond-stage">
-        <SceneBackground id="counting-pond" className="embedded">
-          <div className="lily-frogs" aria-label={`${target.value} frogs`}>
-            {Array.from({ length: target.value }, (_, i) => (
-              <div key={i} className={`lily-slot ${highlight === i ? "lit" : ""}`}>
-                <div className="frog-wrap">
-                  <CharacterSprite
-                    id="frog-idle"
-                    size={Math.min(120, 64 + (5 - target.value) * 8)}
-                    pose={highlight === i ? "celebrate" : "idle"}
-                    title={`Frog ${i + 1}`}
-                  />
-                </div>
-                <div className="lily-pad-disk" aria-hidden />
+        <div className="pond-frog-layer" aria-label={`${target.value} frogs`}>
+          {frogs.map((f, i) =>
+            f.landed || f.hopping ? (
+              <div
+                key={`frog-${i}`}
+                className={`pond-frog ${f.hopping ? "is-hopping" : ""} ${f.landed ? "is-landed" : ""} ${f.celebrate ? "is-celebrate" : ""}`}
+                style={{
+                  left: `${f.x * 100}%`,
+                  top: `${(f.y - f.lift) * 100}%`,
+                }}
+              >
+                <CharacterSprite
+                  id="frog-idle"
+                  size={Math.round(typeof window !== "undefined" ? Math.min(168, window.innerHeight * 0.2) : 130)}
+                  pose={f.celebrate ? "celebrate" : "idle"}
+                  title={`Frog ${i + 1}`}
+                />
+                {f.landed && <span className="frog-contact-shadow" aria-hidden />}
+                {f.ripple && <span className="frog-land-ripple" aria-hidden />}
               </div>
-            ))}
-          </div>
-          <CelebrationEffect kind="splash" active={celebrate} />
-        </SceneBackground>
+            ) : null,
+          )}
+        </div>
+
+        <section className="pond-answer-pads" aria-label="Numbers">
+          {choices.map((n, i) => {
+            const slot = [
+              { x: 0.28, y: 0.78 },
+              { x: 0.5, y: 0.84 },
+              { x: 0.72, y: 0.78 },
+            ][i] || { x: 0.5, y: 0.82 };
+            return (
+              <button
+                key={n.id}
+                type="button"
+                className={`pond-answer-pad ${wiggleId === n.id ? "is-wiggle" : ""} ${glowPad === n.id ? "is-glow" : ""}`}
+                style={{ left: `${slot.x * 100}%`, top: `${slot.y * 100}%` }}
+                disabled={counting || busy}
+                onClick={() => void pick(n)}
+                aria-label={`${n.en}, ${n.es}`}
+              >
+                <span className="pond-pad-disk" aria-hidden />
+                <span className="pond-pad-digit">{n.digit}</span>
+              </button>
+            );
+          })}
+        </section>
+
+        <SoftToast show={!!toast} title={toast?.title ?? ""} variant="color" />
       </div>
-
-      <section className="number-lilies" aria-label="Numbers">
-        {choices.map((n) => (
-          <TouchSafeButton
-            key={n.id}
-            className={`number-lily ${wiggleId === n.id ? "wiggle" : ""}`}
-            aria-label={`${n.en}, ${n.es}`}
-            disabled={counting || busy}
-            onClick={() => void pick(n)}
-          >
-            <span className="digit">{n.digit}</span>
-            <span className="dots" aria-hidden>
-              {Array.from({ length: n.value }, (_, i) => (
-                <i key={i} />
-              ))}
-            </span>
-          </TouchSafeButton>
-        ))}
-      </section>
-
-      <SoftToast show={!!toast} title={toast?.title ?? ""} variant="color" />
-    </div>
+    </ActivityShell>
   );
 }

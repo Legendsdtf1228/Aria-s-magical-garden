@@ -1,57 +1,29 @@
-{
-  "source": "Playwright screenshots of running Vite app (?review=) with real React components + painted-garden-v1 assets",
+﻿{
+  "source": "Playwright live app capture after Phase 3 visual reject rebuild",
   "packPath": "docs/review/v5/phase3-production/",
-  "viewports": [
-    { "name": "landscape-1440x900", "width": 1440, "height": 900 },
-    { "name": "portrait-390x844", "width": 390, "height": 844 }
-  ],
-  "screens": [
-    "01-welcome",
-    "02-garden-map",
-    "03-find-friend",
-    "04-color-garden",
-    "05-counting-pond"
-  ],
-  "strips": [
-    "strip-bunny-crouch-hop-land.png",
-    "strip-frog-rest-hop-ripple.png"
-  ],
-  "countingSequenceFrames": [
-    "counting-seq-01.png",
-    "counting-seq-02.png",
-    "counting-seq-03.png",
-    "counting-seq-04.png",
-    "counting-seq-05.png",
-    "counting-seq-06.png",
-    "counting-seq-07.png",
-    "counting-seq-08.png"
-  ],
-  "countingAudio": {
-    "firstRoundNaturalLoad": "One → Uno → How many frogs? (target value is 1 on round 0)",
-    "completeThroughFourLive": ["One", "Two", "Three", "Four", "Uno", "Dos", "Tres", "Cuatro", "How many frogs?"],
-    "speaksEveryNumberThroughFour": true,
-    "doesNotStopAfterTwo": true,
-    "note": "Verified by advancing to a 4-frog round and stubbing TTS so every speechSynthesis.speak call was logged from the running app."
-  },
-  "placeholdersStillVisible": [
-    "Feed / Sounds / Shapes / Care / Free Play / Music deferred — not in this pack",
-    "Find My Friend and Color Garden reuse the garden-map environment WebP (no dedicated activity murals)",
-    "Color choices are CSS painted-color-object tiles, not unique illustrated prop WebPs",
-    "Counting number answers are CSS number-lily buttons under an embedded SceneBackground frame (not full-bleed garden map style)",
-    "Bunny/frog frame strips are exported from anim sheets (same production art), not live in-scene hop capture"
+  "countingAudioApprovedUnchanged": "One → Two → Three → Four → Uno → Dos → Tres → Cuatro → How many frogs?",
+  "placeholders": [
+    "Sounds / Feed / Shapes / Care / Free Play / Music deferred — not started",
+    "Color choices use painted prop WebPs (pot / can / bed / boots) plus a soft color wash and secondary labels — not unique per-color illustrated props",
+    "Counting answer numbers are large lily-disk buttons placed in the pond (not white cards)",
+    "Four-frog proof capture uses ?frogs=4 so the round is visible without grinding early rounds — speech order unchanged"
   ],
   "exactKnownVisualDefects": [
-    "Counting Pond is still a cream page with a centered pond window + white SpokenPrompt bubble + bottom number buttons — not a full-bleed painted garden scene like Welcome/Map",
-    "Counting Pond screenshots / sequence frames show lily pads but frogs are not visibly rendered on pads (CharacterSprite frogs missing or invisible in capture)",
-    "Color Garden uses three large labeled color tiles floating over the map — not painted environmental choices baked into the scene",
-    "Find My Friend landscape often shows four animals (not strictly three large answer animals)",
-    "Find My Friend portrait: Replay control text cropped to 'Repla'; character sprites appear sliced/glitched on narrow viewport",
-    "Color Garden portrait: Replay text cropped; flower parent control crowded against Replay",
-    "Garden Map portrait: large prev/next chevrons overlap characters (cat under left chevron); one bird sprite appears vertically cropped",
-    "Welcome landscape: puppy placement can read as sitting in/on water rather than bank/blanket",
-    "Welcome/Map character density risks decorative animals resembling Find-My-Friend answers when that activity reuses the same map mural",
-    "Automation DOM checks reported zero flat-hills / emoji / SVG / hotspot markers; visual judgment still required vs approved unified V4 painted baseline"
+    "Find portrait: choice animals can overlap each other (butterfly over cat) and scale can look inconsistent vs landscape",
+    "Color Garden: prop base art color may not match the labeled target (e.g. blue watering can labeled Orange) because wash alone cannot recolor the illustration fully",
+    "Color props still sit on soft oval pedestals rather than bare dirt contact only",
+    "Dedicated meadow / flower-patch / pond murals are new generated art and softer than the welcome/map masters — style match needs human judgment",
+    "Portrait Find mural can still read cottage/gazebo-heavy depending on crop of animal-meadow-portrait",
+    "Live hop strips are short Playwright frame grabs — judge motion timing in-app if needed"
   ],
+  "visualCheck": {
+    "blackBoxesGone": true,
+    "countingFourFrogsVisible": true,
+    "findExactlyThreeLandscape": true,
+    "replayFullyVisibleInPack": true,
+    "dedicatedScenesWired": ["animal-meadow", "color-flower-patch", "counting-pond"]
+  },
   "hotspotDebug": false,
-  "stoppedFor": "visual approval — no Sounds/Feed/Shapes/Care/FreePlay/Music work started"
+  "testsAndBuild": "unit + production build passed before capture",
+  "stoppedFor": "visual approval — remaining activities not started"
 }

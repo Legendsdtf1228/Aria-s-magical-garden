@@ -13,8 +13,16 @@ import type { ActivityCommonProps } from "./types";
 
 const ROUNDS = 6;
 
+/** Three meadow ground slots — feet anchors. Exactly three answers. */
+const MEADOW_SLOTS = [
+  { x: 0.2, y: 0.78 },
+  { x: 0.5, y: 0.8 },
+  { x: 0.8, y: 0.76 },
+];
+
 /**
- * Find My Friend — painted meadow, large full-body animals, no white cards / emoji / SVG.
+ * Find My Friend — dedicated Animal Meadow, exactly three full-body painted animals.
+ * No decorative friends. No shared garden-map mural.
  */
 export function FindMyFriendActivity(props: ActivityCommonProps) {
   const [round, setRound] = useState(0);
@@ -40,7 +48,9 @@ export function FindMyFriendActivity(props: ActivityCommonProps) {
 
   useEffect(() => {
     if (complete) return;
-    setChoices(pickChoices(GARDEN_ANIMALS, target, 3));
+    // Always exactly three distinct choices
+    const next = pickChoices(GARDEN_ANIMALS, target, 3).slice(0, 3);
+    setChoices(next);
     setCelebrateId(null);
     lock.current = false;
     const t = setTimeout(prompt, 400);
@@ -91,6 +101,11 @@ export function FindMyFriendActivity(props: ActivityCommonProps) {
     setTimeout(() => setCatchingId(null), 1200);
   };
 
+  const spriteSize =
+    typeof window !== "undefined"
+      ? Math.round(Math.min(240, Math.max(140, window.innerHeight * 0.24)))
+      : 180;
+
   if (complete) {
     return (
       <ActivityShell
@@ -136,28 +151,40 @@ export function FindMyFriendActivity(props: ActivityCommonProps) {
       onOpenSettings={props.onOpenSettings}
       onRepeat={prompt}
     >
-      <div className="painted-prompt-sign" role="status">
-        <p className="painted-prompt-line">Find the {target.en}</p>
-        <p className="painted-prompt-line es">Encuentra el {target.es}</p>
+      <div className="animal-meadow" data-find-v5="meadow-three">
+        <div className="painted-prompt-sign meadow-prompt" role="status">
+          <p className="painted-prompt-line">Find the {target.en}</p>
+          <p className="painted-prompt-line es">Encuentra el {target.es}</p>
+        </div>
+
+        <div className="meadow-choices" aria-label="Friends">
+          {choices.slice(0, 3).map((a, i) => {
+            const slot = MEADOW_SLOTS[i] || MEADOW_SLOTS[0];
+            const isWin = celebrateId === a.id;
+            return (
+              <button
+                key={a.id}
+                type="button"
+                className={`meadow-animal ${wiggleId === a.id ? "is-wiggle" : ""} ${isWin ? "is-celebrate" : ""}`}
+                style={{
+                  left: `${isWin ? 50 : slot.x * 100}%`,
+                  top: `${isWin ? 62 : slot.y * 100}%`,
+                }}
+                onClick={() => pick(a.id)}
+                aria-label={`${a.en}, ${a.es}`}
+              >
+                <span className="meadow-animal-shadow" aria-hidden />
+                <CharacterSprite
+                  id={characterArtId(a.id)}
+                  size={spriteSize}
+                  pose={isWin ? "celebrate" : "idle"}
+                  title={`${a.en} ${a.es}`}
+                />
+              </button>
+            );
+          })}
+        </div>
       </div>
-      <section className="painted-choice-row" aria-label="Friends">
-        {choices.map((a) => (
-          <button
-            key={a.id}
-            type="button"
-            className={`painted-choice-animal ${wiggleId === a.id ? "is-wiggle" : ""} ${celebrateId === a.id ? "is-celebrate" : ""}`}
-            onClick={() => pick(a.id)}
-            aria-label={`${a.en}, ${a.es}`}
-          >
-            <CharacterSprite
-              id={characterArtId(a.id)}
-              size={Math.round(typeof window !== "undefined" ? Math.min(220, window.innerHeight * 0.24) : 180)}
-              pose={celebrateId === a.id ? "celebrate" : "idle"}
-              title={`${a.en} ${a.es}`}
-            />
-          </button>
-        ))}
-      </section>
       <SoftToast show={!!toast} title={toast?.title ?? ""} variant="friend" />
     </ActivityShell>
   );

@@ -528,6 +528,7 @@
   inset: 0;
   z-index: 4;
   pointer-events: none;
+  overflow: visible;
 }
 .map-character {
   position: absolute;
@@ -625,28 +626,73 @@
   top: max(10px, env(safe-area-inset-top));
   right: max(10px, env(safe-area-inset-right));
 }
-.map-ui-arrow {
+/* Edge gutters — large invisible hit targets, subtle glyphs, no character overlap */
+.map-nav-gutter {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 88px;
-  height: 88px;
-  min-width: 88px;
-  min-height: 88px;
-  border: 4px solid #fff;
-  border-radius: 50%;
-  background: #fff9e9ee;
-  box-shadow: 0 8px 0 #d8cbb3;
-  font-size: 32px;
+  top: 18%;
+  bottom: 18%;
+  width: max(56px, 7vw);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
+.map-nav-gutter.left {
+  left: max(0px, env(safe-area-inset-left));
+}
+.map-nav-gutter.right {
+  right: max(0px, env(safe-area-inset-right));
+}
+.map-ui-arrow {
+  position: relative;
+  top: auto;
+  left: auto !important;
+  right: auto !important;
+  transform: none;
+  width: 100%;
+  height: 100%;
+  min-width: 56px;
+  min-height: 120px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  font-size: 22px;
   color: #554860;
   cursor: pointer;
+  opacity: 0.55;
 }
-.map-ui-arrow.left { left: max(8px, env(safe-area-inset-left)); }
-.map-ui-arrow.right { right: max(8px, env(safe-area-inset-right)); }
-.map-ui-arrow:active { transform: translateY(-50%) scale(0.94); }
+.map-ui-arrow:hover,
+.map-ui-arrow:focus-visible {
+  opacity: 0.85;
+}
+.map-ui-arrow:active {
+  transform: scale(0.98);
+  opacity: 1;
+}
+.map-arrow-glyph {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: #fff9e9aa;
+  box-shadow: 0 2px 0 #d8cbb388;
+  font-size: 16px;
+  line-height: 1;
+}
 
 @media (min-width: 1100px) {
-  .map-ui-arrow { display: none; }
+  .map-nav-gutter { display: none; }
+}
+
+/* Keep character layer clear of portrait gutters */
+.garden-map-root.is-portrait .map-character-layer {
+  left: max(52px, 7vw);
+  right: max(52px, 7vw);
+  width: auto;
 }
 
 @media (prefers-reduced-motion: reduce) {

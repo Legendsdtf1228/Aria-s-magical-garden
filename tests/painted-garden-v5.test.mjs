@@ -23,6 +23,7 @@ test("ActivityShell never mounts SVG LivingFriends or FloatingFriends", () => {
   assert.doesNotMatch(shell, /import \{[^}]*FloatingFriends/);
   assert.doesNotMatch(shell, /<LivingFriends|<FloatingFriends|<GardenAnimal/);
   assert.match(shell, /GardenScene/);
+  assert.match(shell, /PortraitSafeChrome/);
 });
 
 test("GardenScene never renders flat hills or emoji bugs", () => {
@@ -37,18 +38,50 @@ test("GardenAnimal stub cannot render SVG paths", () => {
   assert.match(ga, /CharacterSprite|characterArtId/);
 });
 
-test("ColorGarden no longer renders color-buddy or emoji bloom", () => {
+test("ColorGarden uses dedicated flower patch and env choices, not CSS tiles or map mural", () => {
   const color = read("app/activities/ColorGarden.tsx");
+  const shell = read("app/components/ActivityShell.tsx");
   assert.doesNotMatch(color, /color-buddy|bloom-burst|🌸|✨/);
-  assert.match(color, /painted-color-object|painted-prompt-sign/);
+  assert.doesNotMatch(color, /painted-color-object/);
+  assert.match(color, /env-color-choice/);
+  assert.match(color, /color-flower-patch/);
+  assert.match(color, /env-prop-img|flower-pot\.webp/);
+  assert.match(shell, /color-flower-patch-landscape/);
+  assert.match(shell, /colors:\s*\{[\s\S]*?color-flower-patch-landscape/);
 });
 
-test("FindMyFriend uses painted choices without white animal-btn cards", () => {
+test("FindMyFriend uses animal meadow with exactly three choices wiring", () => {
   const find = read("app/activities/FindMyFriend.tsx");
+  const shell = read("app/components/ActivityShell.tsx");
   assert.doesNotMatch(find, /className=\{`animal-btn|className="animal-btn/);
   assert.doesNotMatch(find, /from ["'].*GardenAnimal["']/);
-  assert.match(find, /painted-choice-animal/);
+  assert.match(find, /meadow-animal/);
+  assert.match(find, /slice\(0, 3\)/);
   assert.match(find, /CharacterSprite/);
+  assert.match(shell, /animal-meadow-landscape/);
+});
+
+test("CountingPond is full-bleed with accumulating frogs and numbered lily pads", () => {
+  const counting = read("app/activities/CountingPond.tsx");
+  assert.match(counting, /counting-pond-bleed/);
+  assert.match(counting, /pond-answer-pad/);
+  assert.match(counting, /hopFrogOntoPad/);
+  assert.match(counting, /runCountSequence/);
+  assert.doesNotMatch(counting, /SpokenPrompt/);
+  assert.doesNotMatch(counting, /number-lily/);
+});
+
+test("dedicated Phase 3 scenes exist on disk", () => {
+  for (const name of [
+    "animal-meadow-landscape.webp",
+    "animal-meadow-portrait.webp",
+    "color-flower-patch-landscape.webp",
+    "color-flower-patch-portrait.webp",
+    "counting-pond-landscape.webp",
+    "counting-pond-portrait.webp",
+  ]) {
+    assert.equal(existsSync(join(root, "public/art/scenes", name)), true, `missing ${name}`);
+  }
 });
 
 test("production painted-garden-v1 idle sprites exist for full cast", () => {
@@ -63,6 +96,12 @@ test("forbidden legacy CSS markers are not used by ActivityShell path", () => {
   for (const marker of ["lg-hills", "welcome-play-flower", "big-choice", "color-buddy"]) {
     assert.doesNotMatch(shell, new RegExp(marker));
   }
+});
+
+test("puppy route stays on dry cottage grass, not pond", () => {
+  const routes = read("app/game/friendRoutes.ts");
+  assert.match(routes, /cottage-porch-grass/);
+  assert.doesNotMatch(routes, /puppyMeadowArea:[\s\S]{0,120}grassy-clearing/);
 });
 
 test("PWA cache is v5", () => {

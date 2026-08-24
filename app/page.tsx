@@ -49,9 +49,11 @@ export default function Home() {
   const [settingsReturn, setSettingsReturn] = useState<Screen>("hub");
 
   // Production review capture: ?review=welcome|hub|findFriend|colors|counting
+  // Optional: &frogs=4 forces Counting Pond target value for visual proof
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const q = new URLSearchParams(window.location.search).get("review");
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get("review");
     if (!q) return;
     if (q === "welcome") {
       setScreen("welcome");

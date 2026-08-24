@@ -7,6 +7,12 @@ export type SceneId =
   | "welcome-garden-portrait"
   | "garden-map-landscape"
   | "garden-map-portrait"
+  | "animal-meadow-landscape"
+  | "animal-meadow-portrait"
+  | "color-flower-patch-landscape"
+  | "color-flower-patch-portrait"
+  | "counting-pond-landscape"
+  | "counting-pond-portrait"
   | "counting-pond";
 
 export type FriendSpriteId =
@@ -42,8 +48,38 @@ export const SCENE_ART: Record<SceneId, { src: string; alt: string; creaturesAll
     alt: "Empty garden map environment for phones",
     creaturesAllowed: false,
   },
+  "animal-meadow-landscape": {
+    src: "/art/scenes/animal-meadow-landscape.webp",
+    alt: "Empty animal meadow",
+    creaturesAllowed: false,
+  },
+  "animal-meadow-portrait": {
+    src: "/art/scenes/animal-meadow-portrait.webp",
+    alt: "Empty animal meadow for phones",
+    creaturesAllowed: false,
+  },
+  "color-flower-patch-landscape": {
+    src: "/art/scenes/color-flower-patch-landscape.webp",
+    alt: "Empty color flower patch",
+    creaturesAllowed: false,
+  },
+  "color-flower-patch-portrait": {
+    src: "/art/scenes/color-flower-patch-portrait.webp",
+    alt: "Empty color flower patch for phones",
+    creaturesAllowed: false,
+  },
+  "counting-pond-landscape": {
+    src: "/art/scenes/counting-pond-landscape.webp",
+    alt: "Empty counting pond",
+    creaturesAllowed: false,
+  },
+  "counting-pond-portrait": {
+    src: "/art/scenes/counting-pond-portrait.webp",
+    alt: "Empty counting pond for phones",
+    creaturesAllowed: false,
+  },
   "counting-pond": {
-    src: "/art/scenes/counting-pond.webp",
+    src: "/art/scenes/counting-pond-landscape.webp",
     alt: "Garden pond environment",
     creaturesAllowed: false,
   },

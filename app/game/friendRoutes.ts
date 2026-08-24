@@ -139,11 +139,12 @@ export const FRIEND_ROUTES: Record<SceneAspect, AspectRoutes> = {
       home: { x: 0.145, y: 0.58, scale: 1 },
       bounds: { minX: 0.12, maxX: 0.2, minY: 0.54, maxY: 0.62 },
     },
+    // Cottage porch / dry grass — never pond water
     puppyMeadowArea: {
-      zone: "grassy-clearing",
+      zone: "cottage-porch-grass",
       baseSize: 0.12,
-      home: { x: 0.56, y: 0.72, scale: 1 },
-      bounds: { minX: 0.5, maxX: 0.62, minY: 0.68, maxY: 0.78 },
+      home: { x: 0.2, y: 0.62, scale: 1 },
+      bounds: { minX: 0.14, maxX: 0.28, minY: 0.56, maxY: 0.68 },
     },
   },
   portrait: {
@@ -179,9 +180,9 @@ export const FRIEND_ROUTES: Record<SceneAspect, AspectRoutes> = {
       zone: "central-tree",
       baseSize: 0.08,
       waypoints: [
-        { x: 0.42, y: 0.36, scale: 1 },
-        { x: 0.48, y: 0.32, scale: 0.95 },
-        { x: 0.52, y: 0.38, scale: 1 },
+        { x: 0.46, y: 0.34, scale: 1 },
+        { x: 0.5, y: 0.3, scale: 0.95 },
+        { x: 0.54, y: 0.36, scale: 1 },
       ],
     },
     ladybugLeafPath: {
@@ -205,14 +206,15 @@ export const FRIEND_ROUTES: Record<SceneAspect, AspectRoutes> = {
     catCottageArea: {
       zone: "cottage-steps",
       baseSize: 0.11,
-      home: { x: 0.12, y: 0.62, scale: 1 },
-      bounds: { minX: 0.08, maxX: 0.18, minY: 0.58, maxY: 0.68 },
+      home: { x: 0.2, y: 0.62, scale: 1 },
+      bounds: { minX: 0.16, maxX: 0.28, minY: 0.58, maxY: 0.68 },
     },
+    // Dry grass by cottage path — never pond
     puppyMeadowArea: {
-      zone: "grassy-clearing",
+      zone: "cottage-porch-grass",
       baseSize: 0.11,
-      home: { x: 0.78, y: 0.82, scale: 1 },
-      bounds: { minX: 0.7, maxX: 0.88, minY: 0.76, maxY: 0.88 },
+      home: { x: 0.3, y: 0.72, scale: 1 },
+      bounds: { minX: 0.22, maxX: 0.4, minY: 0.66, maxY: 0.78 },
     },
   },
 };
