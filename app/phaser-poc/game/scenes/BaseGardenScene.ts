@@ -18,37 +18,50 @@ export abstract class BaseGardenScene extends Phaser.Scene {
   worldH = LAYOUT.landscape.h;
   bg!: Phaser.GameObjects.Image;
   busy = false;
+  private rebuildQueued = false;
+  private chromeBuilt = false;
 
   constructor(key: string) {
     super(key);
   }
 
   ensureAspect() {
-    const parent = this.scale.parentSize;
-    const pw = parent.width || window.innerWidth;
-    const ph = parent.height || window.innerHeight;
+    const pw = this.scale.width || window.innerWidth;
+    const ph = this.scale.height || window.innerHeight;
     this.aspect = detectAspect(pw, ph);
-    const L = LAYOUT[this.aspect];
-    this.worldW = L.w;
-    this.worldH = L.h;
-    if (this.scale.width !== L.w || this.scale.height !== L.h) {
-      this.scale.setGameSize(L.w, L.h);
-    }
+    // Use live canvas size (RESIZE) so we fill the viewport with no gutters
+    this.worldW = pw;
+    this.worldH = ph;
   }
 
   placeBackground(keyLandscape: string, keyPortrait: string) {
     this.ensureAspect();
     const key = this.aspect === "portrait" ? keyPortrait : keyLandscape;
     if (this.bg) this.bg.destroy();
-    // FIT contain — letterbox if needed; never cover-crop
     this.bg = this.add.image(this.worldW / 2, this.worldH / 2, key);
+    // Cover the game view — intentional portrait/landscape murals; no green gutters
     const sx = this.worldW / this.bg.width;
     const sy = this.worldH / this.bg.height;
-    const s = Math.min(sx, sy);
+    const s = Math.max(sx, sy);
     this.bg.setScale(s).setOrigin(0.5).setDepth(0);
     this.cameras.main.setBounds(0, 0, this.worldW, this.worldH);
     this.cameras.main.centerOn(this.worldW / 2, this.worldH / 2);
     this.cameras.main.setBackgroundColor(0x1a2a18);
+  }
+
+  /** Debounced rebuild on resize — prevents infinite setGameSize loops. */
+  bindSafeResize(rebuild: () => void) {
+    this.scale.off("resize");
+    this.scale.on("resize", () => {
+      if (!this.scene.isActive()) return;
+      if (this.rebuildQueued) return;
+      this.rebuildQueued = true;
+      this.time.delayedCall(50, () => {
+        this.rebuildQueued = false;
+        if (!this.scene.isActive()) return;
+        rebuild();
+      });
+    });
   }
 
   /** Feet / bottom-center anchor character. */
@@ -64,7 +77,10 @@ export abstract class BaseGardenScene extends Phaser.Scene {
 
   ensureMinTouch(obj: Phaser.GameObjects.GameObject & { setInteractive: Function }) {
     const anyObj = obj as Phaser.GameObjects.Image;
-    const b = typeof anyObj.getBounds === "function" ? anyObj.getBounds() : new Phaser.Geom.Rectangle(0, 0, MIN_TOUCH_CSS_PX, MIN_TOUCH_CSS_PX);
+    const b =
+      typeof anyObj.getBounds === "function"
+        ? anyObj.getBounds()
+        : new Phaser.Geom.Rectangle(0, 0, MIN_TOUCH_CSS_PX, MIN_TOUCH_CSS_PX);
     const min = MIN_TOUCH_CSS_PX;
     const w = Math.max(b.width, min);
     const h = Math.max(b.height, min);
@@ -108,36 +124,103 @@ export abstract class BaseGardenScene extends Phaser.Scene {
     });
   }
 
+  /** Wooden garden plaque — used for prompts (not floating website chrome). */
   addWoodenSign(en: string, es: string) {
     const safe = UI_SAFE[this.aspect];
-    const y = this.worldH * safe.promptY;
+    const y = this.worldH * (safe.promptY + 0.02);
     const g = this.add.container(this.worldW / 2, y);
-    const w = Math.min(this.worldW * 0.72, this.aspect === "portrait" ? 340 : 520);
-    const h = this.aspect === "portrait" ? 70 : 78;
-    const board = this.add.rectangle(0, 0, w, h, 0xe8c988).setStrokeStyle(4, 0x8a6230);
+    const w = Math.min(this.worldW * 0.7, this.aspect === "portrait" ? 320 : 480);
+    const h = this.aspect === "portrait" ? 64 : 72;
+    const board = this.add.rectangle(0, 0, w, h, 0xc4a06a).setStrokeStyle(5, 0x6a4420);
     const t1 = this.add
-      .text(0, -14, en, {
+      .text(0, -12, en, {
         fontFamily: "Georgia, serif",
-        fontSize: this.aspect === "portrait" ? "18px" : "24px",
-        color: "#3a2810",
+        fontSize: this.aspect === "portrait" ? "17px" : "22px",
+        color: "#2a1a08",
         fontStyle: "bold",
         align: "center",
-        wordWrap: { width: w - 24 },
+        wordWrap: { width: w - 20 },
       })
       .setOrigin(0.5);
     const t2 = this.add
-      .text(0, 16, es, {
+      .text(0, 14, es, {
         fontFamily: "Georgia, serif",
-        fontSize: this.aspect === "portrait" ? "15px" : "18px",
-        color: "#5a4020",
+        fontSize: this.aspect === "portrait" ? "14px" : "17px",
+        color: "#4a3010",
         fontStyle: "bold",
         align: "center",
-        wordWrap: { width: w - 24 },
+        wordWrap: { width: w - 20 },
       })
       .setOrigin(0.5);
     g.add([board, t1, t2]);
     g.setDepth(50);
     return g;
+  }
+
+  /**
+   * Phaser-native safe-area chrome (Home / Replay / parent flower).
+   * Replaces HTML website buttons.
+   */
+  addSafeChrome(opts?: { showReplay?: boolean }) {
+    const pad = Math.max(12, this.worldH * 0.02);
+    const top = pad + (this.scale.displaySize ? 0 : 0);
+    const btnH = 48;
+    const btnW = 96;
+
+    const mkBtn = (x: number, y: number, label: string, onClick: () => void) => {
+      const c = this.add.container(x, y).setDepth(80);
+      const r = this.add.rectangle(0, 0, btnW, btnH, 0xd4b07a).setStrokeStyle(3, 0x6a4420);
+      const t = this.add
+        .text(0, 0, label, {
+          fontFamily: "Georgia, serif",
+          fontSize: "16px",
+          color: "#2a1a08",
+          fontStyle: "bold",
+        })
+        .setOrigin(0.5);
+      c.add([r, t]);
+      r.setInteractive({ useHandCursor: true });
+      // Expand visual button hit with a larger invisible zone
+      const zone = this.add
+        .zone(x, y, Math.max(btnW, MIN_TOUCH_CSS_PX), Math.max(btnH, MIN_TOUCH_CSS_PX))
+        .setInteractive({ useHandCursor: true });
+      zone.on("pointerdown", onClick);
+      r.on("pointerdown", onClick);
+      return c;
+    };
+
+    mkBtn(pad + btnW / 2, top + btnH / 2, "Home", () => {
+      EventBus.emit("poc-tap");
+      this.goHome();
+    });
+
+    if (opts?.showReplay !== false) {
+      mkBtn(pad + btnW / 2 + btnW + 12, top + btnH / 2, "Replay", () => {
+        EventBus.emit("poc-tap");
+        EventBus.emit("poc-replay-request");
+        if (typeof (this as { rebuild?: () => void }).rebuild === "function") {
+          (this as { rebuild: () => void }).rebuild();
+        } else {
+          this.scene.restart();
+        }
+      });
+    }
+
+    // Parent flower — right safe area
+    const flower = this.add.container(this.worldW - pad - 36, top + 28).setDepth(80);
+    const petal = this.add.circle(0, 0, 28, 0xf2a0b8).setStrokeStyle(3, 0xc06080);
+    const center = this.add.circle(0, 0, 12, 0xffe08a);
+    flower.add([petal, center]);
+    petal.setInteractive(
+      new Phaser.Geom.Circle(0, 0, 48),
+      Phaser.Geom.Circle.Contains,
+    );
+    petal.on("pointerdown", () => {
+      EventBus.emit("poc-tap");
+      EventBus.emit("poc-parent-open");
+    });
+
+    this.chromeBuilt = true;
   }
 
   speak(en: string, es: string) {

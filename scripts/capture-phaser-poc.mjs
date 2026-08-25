@@ -1,6 +1,7 @@
-/**
- * Capture Phaser POC screenshots at 1440×900 and 390×844.
+﻿/**
+ * Capture Phaser POC screenshots at 1440x900 and 390x844.
  * Expects REVIEW_URL like https://host/phaser-poc
+ * Optional CACHE_BUST env (default Date.now()) appended as &v= to bust SW/cache.
  */
 import { chromium } from "playwright";
 import { mkdir } from "fs/promises";
@@ -19,7 +20,8 @@ async function capture(width, height, label) {
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width, height } });
   for (const id of SCREENS) {
-    const url = `${BASE}?review=${id}`;
+    const bust = process.env.CACHE_BUST || String(Date.now());
+    const url = `${BASE}?review=${id}&v=${bust}`;
     await page.goto(url, { waitUntil: "networkidle", timeout: 90000 });
     await page.waitForTimeout(2500);
     const file = join(OUT, `${id}--${label}.png`);

@@ -39,9 +39,9 @@ export const CHOICE_SLOTS: Record<PocAspect, [Norm, Norm, Norm]> = {
 };
 
 /** Character display height as fraction of scene height (consistent cast scale). */
-export const CHAR_HEIGHT_FRAC = 0.22;
-export const PROP_HEIGHT_FRAC = 0.16;
-export const LANDMARK_HEIGHT_FRAC = 0.18;
+export const CHAR_HEIGHT_FRAC = 0.18;
+export const PROP_HEIGHT_FRAC = 0.14;
+export const LANDMARK_HEIGHT_FRAC = 0.22;
 export const MIN_TOUCH_CSS_PX = 96;
 
 export function detectAspect(width: number, height: number): PocAspect {
@@ -58,35 +58,35 @@ export const HUB_LANDMARKS: Record<
   { id: string; en: string; es: string; scene: string; pos: Norm }[]
 > = {
   landscape: [
-    { id: "findFriend", en: "Find My Friend", es: "Busca a Mi Amigo", scene: "FindFriend", pos: { x: 0.42, y: 0.52 } },
-    { id: "feed", en: "Feed the Friends", es: "Alimenta a los Amigos", scene: "FeedFriends", pos: { x: 0.24, y: 0.72 } },
-    { id: "freePlay", en: "Free Play", es: "Jardín Libre", scene: "FreePlay", pos: { x: 0.56, y: 0.48 } },
+    { id: "findFriend", en: "Find My Friend", es: "Busca a Mi Amigo", scene: "FindFriend", pos: { x: 0.48, y: 0.58 } },
+    { id: "feed", en: "Feed the Friends", es: "Alimenta a los Amigos", scene: "FeedFriends", pos: { x: 0.78, y: 0.82 } },
+    { id: "freePlay", en: "Free Play", es: "Jardín Libre", scene: "FreePlay", pos: { x: 0.62, y: 0.42 } },
   ],
   portrait: [
-    { id: "findFriend", en: "Find My Friend", es: "Busca a Mi Amigo", scene: "FindFriend", pos: { x: 0.45, y: 0.48 } },
-    { id: "feed", en: "Feed the Friends", es: "Alimenta a los Amigos", scene: "FeedFriends", pos: { x: 0.28, y: 0.68 } },
-    { id: "freePlay", en: "Free Play", es: "Jardín Libre", scene: "FreePlay", pos: { x: 0.58, y: 0.42 } },
+    { id: "findFriend", en: "Find My Friend", es: "Busca a Mi Amigo", scene: "FindFriend", pos: { x: 0.5, y: 0.52 } },
+    { id: "feed", en: "Feed the Friends", es: "Alimenta a los Amigos", scene: "FeedFriends", pos: { x: 0.72, y: 0.78 } },
+    { id: "freePlay", en: "Free Play", es: "Jardín Libre", scene: "FreePlay", pos: { x: 0.55, y: 0.38 } },
   ],
 };
 
 export const BUNNY_PATH: Record<PocAspect, Norm[]> = {
   landscape: [
-    { x: 0.22, y: 0.76, scale: 1 },
-    { x: 0.3, y: 0.72, scale: 0.94 },
-    { x: 0.4, y: 0.68, scale: 0.88 },
-    { x: 0.3, y: 0.72, scale: 0.94 },
+    { x: 0.2, y: 0.78, scale: 1 },
+    { x: 0.28, y: 0.74, scale: 0.96 },
+    { x: 0.36, y: 0.7, scale: 0.92 },
+    { x: 0.28, y: 0.74, scale: 0.96 },
   ],
   portrait: [
-    { x: 0.28, y: 0.7, scale: 1 },
-    { x: 0.4, y: 0.66, scale: 0.94 },
-    { x: 0.52, y: 0.64, scale: 0.9 },
-    { x: 0.4, y: 0.66, scale: 0.94 },
+    { x: 0.26, y: 0.72, scale: 1 },
+    { x: 0.36, y: 0.68, scale: 0.96 },
+    { x: 0.46, y: 0.66, scale: 0.92 },
+    { x: 0.36, y: 0.68, scale: 0.96 },
   ],
 };
 
 export const FROG_PAD: Record<PocAspect, Norm> = {
-  landscape: { x: 0.78, y: 0.7, scale: 0.85 },
-  portrait: { x: 0.72, y: 0.62, scale: 0.85 },
+  landscape: { x: 0.74, y: 0.68, scale: 1 },
+  portrait: { x: 0.7, y: 0.6, scale: 1 },
 };
 
 export const FEED_TARGETS: Record<PocAspect, Norm[]> = {

@@ -4,7 +4,7 @@ import { GardenHubScene } from "./scenes/GardenHubScene";
 import { FindFriendScene } from "./scenes/FindFriendScene";
 import { FeedFriendsScene } from "./scenes/FeedFriendsScene";
 import { FreePlayScene } from "./scenes/FreePlayScene";
-import { LAYOUT } from "./layouts";
+import { LAYOUT, detectAspect } from "./layouts";
 
 /**
  * Official Phaser + React template pattern:
@@ -18,8 +18,13 @@ export default function StartGame(parent: string) {
     parentEl.style.height = "100%";
   }
 
+  const review =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("review")
+      : null;
   const portrait =
-    typeof window !== "undefined" && window.innerHeight > window.innerWidth * 1.05;
+    typeof window !== "undefined" &&
+    detectAspect(window.innerWidth, window.innerHeight) === "portrait";
   const size = portrait ? LAYOUT.portrait : LAYOUT.landscape;
 
   const config: Phaser.Types.Core.GameConfig = {
@@ -29,7 +34,8 @@ export default function StartGame(parent: string) {
     parent,
     backgroundColor: "#1a2a18",
     scale: {
-      mode: Scale.FIT,
+      // Fill parent — no dark letterbox gutters. Layout data still switches by aspect.
+      mode: Scale.RESIZE,
       autoCenter: Scale.CENTER_BOTH,
       width: size.w,
       height: size.h,
@@ -42,5 +48,7 @@ export default function StartGame(parent: string) {
     banner: false,
   };
 
-  return new Game(config);
+  const game = new Game(config);
+  game.registry.set("pocStartScene", review);
+  return game;
 }

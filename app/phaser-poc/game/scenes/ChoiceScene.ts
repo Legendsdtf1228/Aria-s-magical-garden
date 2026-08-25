@@ -29,10 +29,7 @@ export abstract class ChoiceScene extends BaseGardenScene {
   abstract onCorrect(item: ChoiceItem): void;
 
   create() {
-    this.scale.on("resize", () => {
-      if (!this.scene.isActive()) return;
-      this.rebuild();
-    });
+    this.bindSafeResize(() => this.rebuild());
     this.rebuild();
     this.emitReady();
   }
@@ -42,6 +39,7 @@ export abstract class ChoiceScene extends BaseGardenScene {
     this.sprites = [];
     const bg = this.backgroundKeys();
     this.placeBackground(bg.landscape, bg.portrait);
+    this.addSafeChrome();
     const round = this.buildRound();
     this.target = round.target;
     this.choices = round.choices.slice(0, 3);
@@ -58,7 +56,7 @@ export abstract class ChoiceScene extends BaseGardenScene {
 
     const slots = CHOICE_SLOTS[this.aspect];
     this.choices.forEach((item, i) => {
-      const img = this.addCharacter(item.texture, slots[i] as Norm);
+      const img = this.addCharacter(item.texture, slots[i] as Norm, 0.2);
       img.setData("choiceId", item.id);
       img.on("pointerdown", () => this.pick(item, img));
       this.sprites.push(img);

@@ -1,13 +1,10 @@
 import Phaser from "../phaserCompat";
 import { EventBus } from "../EventBus";
+import { POC_ASSETS, resolveStartScene } from "../assetManifest";
 
 export class BootScene extends Phaser.Scene {
   constructor() {
     super("Boot");
-  }
-
-  preload() {
-    // Tiny placeholder so Boot never stalls; real art loads in Preload.
   }
 
   create() {
@@ -15,50 +12,169 @@ export class BootScene extends Phaser.Scene {
   }
 }
 
+/**
+ * Preload with progress, load-error reporting, timeout, and bilingual retry.
+ * Starts the review deep-link scene only AFTER assets are ready (no race).
+ */
 export class PreloadScene extends Phaser.Scene {
+  private failed: { key: string; path: string; status?: string }[] = [];
+  private bar!: Phaser.GameObjects.Rectangle;
+  private label!: Phaser.GameObjects.Text;
+  private done = false;
+  private watchdog?: Phaser.Time.TimerEvent;
+
   constructor() {
     super("Preload");
+  }
+
+  init() {
+    this.failed = [];
+    this.done = false;
   }
 
   preload() {
     const w = this.scale.width;
     const h = this.scale.height;
-    const bar = this.add.rectangle(w / 2, h / 2, w * 0.4, 18, 0xe8c988).setOrigin(0.5);
+    this.cameras.main.setBackgroundColor(0x1a2a18);
+
+    this.add
+      .text(w / 2, h * 0.38, "Loading the garden…\nCargando el jardín…", {
+        fontFamily: "Georgia, serif",
+        fontSize: "22px",
+        color: "#f3e2b8",
+        align: "center",
+      })
+      .setOrigin(0.5);
+
+    this.bar = this.add.rectangle(w / 2, h * 0.5, 8, 22, 0xe8c988).setOrigin(0.5);
+    this.label = this.add
+      .text(w / 2, h * 0.56, "", {
+        fontFamily: "Georgia, serif",
+        fontSize: "14px",
+        color: "#c8b890",
+        align: "center",
+        wordWrap: { width: w * 0.8 },
+      })
+      .setOrigin(0.5);
+
     this.load.on("progress", (v: number) => {
-      bar.width = w * 0.4 * v;
+      this.bar.width = Math.max(8, w * 0.5 * v);
     });
 
-    // Scenes
-    this.load.image("hub-landscape", "/art/scenes/garden-map-landscape.webp");
-    this.load.image("hub-portrait", "/art/scenes/garden-map-portrait.webp");
-    this.load.image("meadow-landscape", "/art/scenes/animal-meadow-landscape.webp");
-    this.load.image("meadow-portrait", "/art/scenes/animal-meadow-portrait.webp");
-    this.load.image("picnic-landscape", "/art/scenes/picnic-meadow-landscape.webp");
-    this.load.image("picnic-portrait", "/art/scenes/picnic-meadow-portrait.webp");
-    this.load.image("freeplay-landscape", "/art/scenes/freeplay-path-landscape.webp");
-    this.load.image("freeplay-portrait", "/art/scenes/freeplay-path-portrait.webp");
+    this.load.on("filecomplete", (key: string) => {
+      this.label.setText(key);
+    });
 
-    // Cast
-    for (const id of ["butterfly", "bunny", "bird", "ladybug", "bee", "frog", "cat", "puppy"]) {
-      this.load.image(`char-${id}`, `/art/characters/painted-garden-v1/${id}-idle.webp`);
+    this.load.on("loaderror", (file: Phaser.Loader.File) => {
+      const path = (file as { url?: string; src?: string }).url
+        || (file as { src?: string }).src
+        || file.key;
+      this.failed.push({ key: file.key, path: String(path), status: "loaderror" });
+      this.label.setText(`Error: ${file.key}\n${path}`);
+      console.error("[PhaserPOC] loaderror", file.key, path);
+      EventBus.emit("poc-load-error", { key: file.key, path });
+    });
+
+    for (const a of POC_ASSETS) {
+      this.load.image(a.key, a.path);
     }
 
-    // Landmarks + food
-    this.load.image("lm-findFriend", "/art/landmarks/landmark-findFriend.webp");
-    this.load.image("lm-feed", "/art/landmarks/landmark-feed.webp");
-    this.load.image("lm-freePlay", "/art/landmarks/landmark-freePlay.webp");
-    this.load.image("food-carrot", "/art/objects/food-carrot.webp");
-    this.load.image("food-flower", "/art/objects/food-flower.webp");
-    this.load.image("food-seeds", "/art/objects/food-seeds.webp");
-    this.load.image("food-bone", "/art/objects/food-bone.webp");
-    this.load.image("food-fish", "/art/objects/food-fish.webp");
-    this.load.image("food-leaf", "/art/objects/food-leaf.webp");
-    this.load.image("food-fly", "/art/objects/food-fly.webp");
-    this.load.image("food-berry", "/art/objects/food-berry.webp");
+    // Never hang forever on a dark bar
+    this.watchdog = this.time.delayedCall(20000, () => {
+      if (this.done) return;
+      if (!this.failed.length) {
+        this.failed.push({
+          key: "(timeout)",
+          path: "Preload exceeded 20s",
+          status: "timeout",
+        });
+      }
+      this.showRetry();
+    });
   }
 
   create() {
-    EventBus.emit("poc-assets-ready");
-    this.scene.start("GardenHub");
+    if (this.failed.length) {
+      this.showRetry();
+      return;
+    }
+    // Verify textures actually exist in the cache
+    for (const a of POC_ASSETS) {
+      if (!this.textures.exists(a.key)) {
+        this.failed.push({ key: a.key, path: a.path, status: "missing-texture" });
+      }
+    }
+    if (this.failed.length) {
+      this.showRetry();
+      return;
+    }
+    this.finishOk();
+  }
+
+  private finishOk() {
+    if (this.done) return;
+    this.done = true;
+    this.watchdog?.remove(false);
+    const start = resolveStartScene(this.game.registry.get("pocStartScene") as string | null);
+    EventBus.emit("poc-assets-ready", { start, failed: [] });
+    this.scene.start(start);
+  }
+
+  private showRetry() {
+    if (this.done) return;
+    this.done = true;
+    this.watchdog?.remove(false);
+    this.children.removeAll(true);
+    const w = this.scale.width;
+    const h = this.scale.height;
+    const detail = this.failed
+      .slice(0, 4)
+      .map((f) => `${f.key} → ${f.path}${f.status ? ` (${f.status})` : ""}`)
+      .join("\n");
+
+    this.add
+      .text(
+        w / 2,
+        h * 0.32,
+        "Oh no — the garden could not load.\nAy — el jardín no pudo cargar.",
+        {
+          fontFamily: "Georgia, serif",
+          fontSize: "22px",
+          color: "#f3e2b8",
+          align: "center",
+        },
+      )
+      .setOrigin(0.5);
+
+    this.add
+      .text(w / 2, h * 0.48, detail || "Unknown error", {
+        fontFamily: "monospace",
+        fontSize: "12px",
+        color: "#ffb4a8",
+        align: "center",
+        wordWrap: { width: w * 0.85 },
+      })
+      .setOrigin(0.5);
+
+    const btn = this.add
+      .rectangle(w / 2, h * 0.68, 220, 64, 0xe8c988)
+      .setStrokeStyle(4, 0x8a6230)
+      .setInteractive({ useHandCursor: true });
+    this.add
+      .text(w / 2, h * 0.68, "Try again · Intentar otra vez", {
+        fontFamily: "Georgia, serif",
+        fontSize: "16px",
+        color: "#3a2810",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5);
+
+    btn.on("pointerdown", () => {
+      this.done = false;
+      this.failed = [];
+      this.scene.restart();
+    });
+
+    EventBus.emit("poc-load-error", { failed: this.failed });
   }
 }

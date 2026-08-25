@@ -33,10 +33,7 @@ export abstract class DragScene extends BaseGardenScene {
   abstract onFed(animal: DragAnimal, food: DragFood): void;
 
   create() {
-    this.scale.on("resize", () => {
-      if (!this.scene.isActive()) return;
-      this.rebuild();
-    });
+    this.bindSafeResize(() => this.rebuild());
     this.rebuild();
     this.emitReady();
   }
@@ -47,6 +44,7 @@ export abstract class DragScene extends BaseGardenScene {
     this.foodSprites = [];
     const bg = this.backgroundKeys();
     this.placeBackground(bg.landscape, bg.portrait);
+    this.addSafeChrome();
     const round = this.buildRound();
     this.target = round.target;
     this.animals = round.animals.slice(0, 2);
@@ -66,7 +64,7 @@ export abstract class DragScene extends BaseGardenScene {
 
     const animalSlots = FEED_TARGETS[this.aspect];
     this.animals.forEach((a, i) => {
-      const img = this.addCharacter(a.texture, animalSlots[i] as Norm);
+      const img = this.addCharacter(a.texture, animalSlots[i] as Norm, 0.18);
       img.setData("animalId", a.id);
       this.animalSprites.push(img);
     });

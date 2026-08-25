@@ -1,0 +1,304 @@
+{
+  "base": "https://arias-color-garden.old-rice-0a9f.workers.dev",
+  "checkedAt": "2026-08-25T15:05:37.375Z",
+  "assets": [
+    {
+      "key": "hub-landscape",
+      "path": "/art/scenes/garden-map-landscape.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "hub-portrait",
+      "path": "/art/scenes/garden-map-portrait.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "meadow-landscape",
+      "path": "/art/scenes/animal-meadow-landscape.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "meadow-portrait",
+      "path": "/art/scenes/animal-meadow-portrait.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "picnic-landscape",
+      "path": "/art/scenes/picnic-meadow-landscape.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "picnic-portrait",
+      "path": "/art/scenes/picnic-meadow-portrait.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "freeplay-landscape",
+      "path": "/art/scenes/freeplay-path-landscape.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "freeplay-portrait",
+      "path": "/art/scenes/freeplay-path-portrait.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "char-butterfly",
+      "path": "/art/characters/painted-garden-v1/butterfly-idle.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "char-bunny",
+      "path": "/art/characters/painted-garden-v1/bunny-idle.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "char-bird",
+      "path": "/art/characters/painted-garden-v1/bird-idle.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "char-ladybug",
+      "path": "/art/characters/painted-garden-v1/ladybug-idle.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "char-bee",
+      "path": "/art/characters/painted-garden-v1/bee-idle.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "char-frog",
+      "path": "/art/characters/painted-garden-v1/frog-idle.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "char-cat",
+      "path": "/art/characters/painted-garden-v1/cat-idle.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "char-puppy",
+      "path": "/art/characters/painted-garden-v1/puppy-idle.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "lm-findFriend",
+      "path": "/art/landmarks/landmark-findFriend.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "lm-feed",
+      "path": "/art/landmarks/landmark-feed.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "lm-freePlay",
+      "path": "/art/landmarks/landmark-freePlay.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "food-carrot",
+      "path": "/art/objects/food-carrot.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "food-flower",
+      "path": "/art/objects/food-flower.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "food-seeds",
+      "path": "/art/objects/food-seeds.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "food-bone",
+      "path": "/art/objects/food-bone.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "food-fish",
+      "path": "/art/objects/food-fish.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "food-leaf",
+      "path": "/art/objects/food-leaf.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "food-fly",
+      "path": "/art/objects/food-fly.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "key": "food-berry",
+      "path": "/art/objects/food-berry.webp",
+      "status": 200,
+      "ok": true
+    }
+  ],
+  "assetsAllOk": true,
+  "routes": [
+    {
+      "review": "hub",
+      "url": "https://arias-color-garden.old-rice-0a9f.workers.dev/phaser-poc?review=hub",
+      "hasCanvas": true,
+      "canvasW": 1440,
+      "canvasH": 900,
+      "scene": "GardenHub",
+      "badge": true,
+      "retryVisible": false,
+      "bodySnippet": "Phaser POC · not the full game",
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ],
+      "pageErrors": [],
+      "loadedOk": true
+    },
+    {
+      "review": "findFriend",
+      "url": "https://arias-color-garden.old-rice-0a9f.workers.dev/phaser-poc?review=findFriend",
+      "hasCanvas": true,
+      "canvasW": 1440,
+      "canvasH": 900,
+      "scene": "FindFriend",
+      "badge": true,
+      "retryVisible": false,
+      "bodySnippet": "Phaser POC · not the full game",
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ],
+      "pageErrors": [],
+      "loadedOk": true
+    },
+    {
+      "review": "feed",
+      "url": "https://arias-color-garden.old-rice-0a9f.workers.dev/phaser-poc?review=feed",
+      "hasCanvas": true,
+      "canvasW": 1440,
+      "canvasH": 900,
+      "scene": "FeedFriends",
+      "badge": true,
+      "retryVisible": false,
+      "bodySnippet": "Phaser POC · not the full game",
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ],
+      "pageErrors": [],
+      "loadedOk": true
+    },
+    {
+      "review": "freePlay",
+      "url": "https://arias-color-garden.old-rice-0a9f.workers.dev/phaser-poc?review=freePlay",
+      "hasCanvas": true,
+      "canvasW": 1440,
+      "canvasH": 900,
+      "scene": "FreePlay",
+      "badge": true,
+      "retryVisible": false,
+      "bodySnippet": "Phaser POC · not the full game",
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()",
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ],
+      "pageErrors": [],
+      "loadedOk": true
+    }
+  ],
+  "routesAllOk": true
+}

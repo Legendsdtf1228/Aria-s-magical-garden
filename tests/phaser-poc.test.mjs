@@ -65,7 +65,26 @@ test("phaser POC does not import emoji or big-choice website cards", () => {
   }
 });
 
+test("phaser POC asset manifest lists every preload path", async () => {
+  const { POC_ASSETS, resolveStartScene } = await import("../app/phaser-poc/game/assetManifest.ts");
+  assert.ok(POC_ASSETS.length >= 20);
+  assert.ok(POC_ASSETS.every((a) => a.key && a.path.startsWith("/art/")));
+  assert.equal(resolveStartScene("findFriend"), "FindFriend");
+  assert.equal(resolveStartScene("feed"), "FeedFriends");
+  assert.equal(resolveStartScene("freePlay"), "FreePlay");
+  assert.equal(resolveStartScene("hub"), "GardenHub");
+  assert.equal(resolveStartScene(null), "GardenHub");
+});
+
 test("progress storage key remains unchanged for POC shell", () => {
   const core = readFileSync(join(root, "app/data/progressCore.mjs"), "utf8");
   assert.match(core, /aria-color-garden-progress/);
+});
+
+test("preload starts review scene from registry — no React race", () => {
+  const preload = readFileSync(join(root, "app/phaser-poc/game/scenes/BootPreload.ts"), "utf8");
+  const page = readFileSync(join(root, "app/phaser-poc/page.tsx"), "utf8");
+  assert.match(preload, /pocStartScene/);
+  assert.match(preload, /showRetry/);
+  assert.doesNotMatch(page, /scene\.start\(map/);
 });

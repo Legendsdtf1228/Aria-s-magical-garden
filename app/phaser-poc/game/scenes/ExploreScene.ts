@@ -15,10 +15,7 @@ export abstract class ExploreScene extends BaseGardenScene {
   abstract setupWorld(): void;
 
   create() {
-    this.scale.on("resize", () => {
-      if (!this.scene.isActive()) return;
-      this.rebuild();
-    });
+    this.bindSafeResize(() => this.rebuild());
     this.rebuild();
     this.emitReady();
   }
@@ -27,13 +24,14 @@ export abstract class ExploreScene extends BaseGardenScene {
     this.children.removeAll(true);
     const bg = this.backgroundKeys();
     this.placeBackground(bg.landscape, bg.portrait);
+    this.addSafeChrome();
     this.addWoodenSign("Play in the garden", "Juega en el jardín");
     this.setupWorld();
   }
 
   addTappableFriend(id: string, texture: string, en: string, es: string, slotIndex: number) {
     const slots = CHOICE_SLOTS[this.aspect];
-    const img = this.addCharacter(texture, slots[slotIndex % 3] as Norm);
+    const img = this.addCharacter(texture, slots[slotIndex % 3] as Norm, 0.18);
     img.on("pointerdown", () => {
       EventBus.emit("poc-tap");
       this.hopCelebrate(img);
