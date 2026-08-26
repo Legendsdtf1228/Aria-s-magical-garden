@@ -40,6 +40,29 @@ export const CHOICE_SLOTS: Record<PocAspect, [Norm, Norm, Norm]> = {
   ],
 };
 
+/**
+ * Color Garden — feet anchors in the center of each front soil bed
+ * (left / center / right). Do not reuse Find Friend meadow slots.
+ */
+export const COLOR_BED_SLOTS: Record<PocAspect, [Norm, Norm, Norm]> = {
+  landscape: [
+    { x: 0.23, y: 0.745, scale: 1 },
+    { x: 0.5, y: 0.76, scale: 1 },
+    { x: 0.77, y: 0.745, scale: 1 },
+  ],
+  portrait: [
+    { x: 0.24, y: 0.7, scale: 1 },
+    { x: 0.5, y: 0.715, scale: 1 },
+    { x: 0.76, y: 0.7, scale: 1 },
+  ],
+};
+
+/** Color Garden visible prop size targets (px at reference layout). */
+export const COLOR_CHOICE_SIZE = {
+  landscape: { min: 150, target: 185, max: 220, touch: 140 },
+  portrait: { min: 110, target: 135, max: 160, touch: 110 },
+} as const;
+
 export const CHAR_HEIGHT_FRAC = 0.2;
 export const PROP_HEIGHT_FRAC = 0.14;
 export const LANDMARK_HEIGHT_FRAC = 0.2;

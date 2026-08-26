@@ -13,13 +13,14 @@ export type ChoiceItem = {
 
 /**
  * ChoiceScene — one spoken instruction, exactly three large visual choices.
- * No website cards. Find Friend is the first complete Phaser activity.
+ * Find Friend keeps defaults. Color Garden overrides slots / size / feedback.
  */
 export abstract class ChoiceScene extends BaseGardenScene {
   protected target!: ChoiceItem;
   protected choices: ChoiceItem[] = [];
   protected sprites: Phaser.GameObjects.Image[] = [];
   protected roundReady = false;
+  protected showTouchDebug = false;
 
   constructor(key: string) {
     super(key);
@@ -29,7 +30,6 @@ export abstract class ChoiceScene extends BaseGardenScene {
   abstract buildRound(): { target: ChoiceItem; choices: ChoiceItem[] };
   abstract onCorrect(item: ChoiceItem): void;
 
-  /** Spoken / signed prompts — Find Friend default; Color Garden overrides. */
   protected instructionEn(item: ChoiceItem): string {
     return `Find the ${item.en.toLowerCase()}.`;
   }
@@ -47,9 +47,26 @@ export abstract class ChoiceScene extends BaseGardenScene {
   protected choiceHeightFrac(): number {
     return CHAR_HEIGHT_FRAC;
   }
+  /** Feet anchors — Find Friend meadow by default. */
+  protected choiceSlots(): [Norm, Norm, Norm] {
+    return CHOICE_SLOTS[this.aspect];
+  }
+  protected minTouchPx(): number {
+    return 96;
+  }
+  /** Target visible height in CSS/game px; null = use heightFrac only. */
+  protected choiceTargetHeightPx(): number | null {
+    return null;
+  }
+  protected celebrationMs(): number {
+    return 1600;
+  }
 
   create() {
     this.roundReady = false;
+    const params =
+      typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+    this.showTouchDebug = params?.get("debugTouch") === "1";
     this.bindSafeResize(() => this.rebuild());
     this.rebuild();
     this.emitReady();
@@ -72,32 +89,56 @@ export abstract class ChoiceScene extends BaseGardenScene {
     }
 
     this.addWoodenSign(this.signEn(this.target), this.signEs(this.target));
+    this.placeChoices();
+  }
 
-    const slots = CHOICE_SLOTS[this.aspect];
+  protected placeChoices() {
+    const slots = this.choiceSlots();
     const heightFrac = this.choiceHeightFrac();
+    const targetPx = this.choiceTargetHeightPx();
+    const touch = this.minTouchPx();
+
     this.choices.forEach((item, i) => {
       const slot = slots[i] as Norm;
-      const p = {
-        x: slot.x * this.worldW,
-        y: slot.y * this.worldH,
-      };
-      // Contact shadow under feet
+      const p = { x: slot.x * this.worldW, y: slot.y * this.worldH };
+
       this.add
-        .ellipse(p.x, p.y - 2, this.worldW * 0.08, this.worldH * 0.022, 0x1a2010, 0.35)
+        .ellipse(p.x, p.y - 4, this.worldW * 0.11, this.worldH * 0.028, 0x1a2010, 0.38)
         .setDepth(4);
 
-      const img = this.addCharacter(item.texture, slot, heightFrac);
-      img.setDepth(5);
+      const img = this.add.image(p.x, p.y, item.texture).setOrigin(0.5, 1).setDepth(5);
+      let targetH =
+        targetPx != null ? targetPx : this.worldH * heightFrac * (slot.scale ?? 1);
+      // Equal visual weight: fit inside a square cell of targetH
+      const cell = targetH;
+      const sx = cell / img.width;
+      const sy = cell / img.height;
+      const s = Math.min(sx, sy);
+      img.setDisplaySize(img.width * s, img.height * s);
+
+      const hit = Math.max(touch, img.displayWidth * 1.05, img.displayHeight * 1.05);
+      img.setInteractive(
+        new Phaser.Geom.Rectangle(-hit / 2, -hit, hit, hit),
+        Phaser.Geom.Rectangle.Contains,
+      );
       img.setData("choiceId", item.id);
+      img.setData("slotIndex", i);
       img.on("pointerdown", () => this.pick(item, img));
       this.sprites.push(img);
+
+      if (this.showTouchDebug) {
+        this.add
+          .rectangle(p.x, p.y - hit / 2, hit, hit, 0x00ff88, 0.22)
+          .setStrokeStyle(3, 0x00cc66, 0.9)
+          .setDepth(40);
+      }
     });
   }
 
   pick(item: ChoiceItem, img: Phaser.GameObjects.Image) {
     if (this.busy) return;
     EventBus.emit("poc-tap");
-    // Immediate tap reaction
+
     this.tweens.add({
       targets: img,
       scaleX: img.scaleX * 1.08,
@@ -107,21 +148,27 @@ export abstract class ChoiceScene extends BaseGardenScene {
     });
 
     if (item.id !== this.target.id) {
-      this.gentleWiggle(img);
-      this.tweens.add({
-        targets: img,
-        alpha: 0.55,
-        duration: 120,
-        yoyo: true,
-        hold: 80,
-      });
+      this.playWrong(img);
       this.speak("Try another one.", "Intenta otra.");
       return;
     }
 
     this.busy = true;
+    this.playCorrect(item, img);
+    this.onCorrect(item);
+    this.time.delayedCall(this.celebrationMs(), () => {
+      this.busy = false;
+      this.roundReady = false;
+      this.rebuild();
+    });
+  }
+
+  protected playWrong(img: Phaser.GameObjects.Image) {
+    this.gentleWiggle(img);
+  }
+
+  protected playCorrect(item: ChoiceItem, img: Phaser.GameObjects.Image) {
     this.hopCelebrate(img);
-    // Happy sparkles
     for (let i = 0; i < 6; i++) {
       const s = this.add
         .circle(
@@ -141,11 +188,5 @@ export abstract class ChoiceScene extends BaseGardenScene {
       });
     }
     this.speak(`Yes! ${item.en}.`, `¡Sí! ${item.es.toLowerCase()}.`);
-    this.onCorrect(item);
-    this.time.delayedCall(1600, () => {
-      this.busy = false;
-      this.roundReady = false;
-      this.rebuild();
-    });
   }
 }

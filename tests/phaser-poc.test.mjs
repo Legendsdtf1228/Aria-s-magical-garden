@@ -5,6 +5,8 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   CHOICE_SLOTS,
+  COLOR_BED_SLOTS,
+  COLOR_CHOICE_SIZE,
   detectAspect,
   HUB_LANDMARKS,
   HUB_ZONES,
@@ -98,6 +100,18 @@ test("Color Garden hub activity routes into ColorGarden scene", () => {
     const colors = cottage.activities.find((a) => a.id === "colors");
     assert.equal(colors?.scene, "ColorGarden");
   }
+});
+
+test("Color Garden soil-bed slots and toddler size bands", () => {
+  assert.equal(COLOR_BED_SLOTS.landscape.length, 3);
+  assert.equal(COLOR_BED_SLOTS.portrait.length, 3);
+  assert.notDeepEqual(COLOR_BED_SLOTS.landscape, CHOICE_SLOTS.landscape);
+  assert.ok(COLOR_CHOICE_SIZE.landscape.touch >= 140);
+  assert.ok(COLOR_CHOICE_SIZE.portrait.touch >= 110);
+  assert.ok(COLOR_CHOICE_SIZE.landscape.target >= 150);
+  assert.ok(COLOR_CHOICE_SIZE.portrait.target >= 110);
+  const src = readFileSync(join(root, "app/phaser-poc/game/scenes/ColorGardenScene.ts"), "utf8");
+  assert.match(src, /Encuentra el color/);
 });
 
 test("progress storage key remains unchanged for POC shell", () => {
