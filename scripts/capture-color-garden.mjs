@@ -48,12 +48,13 @@ await shot(page, "colorGarden--touch-debug-1440x900.png");
 
 // Wrong then correct on landscape (front beds)
 await goto(page, 1440, 900, "review=colors");
-await tapNorm(page, 0.22, 0.86, 1440, 900);
+// Soil-bed centers (landscape L / C / R)
+await tapNorm(page, 0.22, 0.82, 1440, 900);
 await shot(page, "colorGarden--wrong-tap-1440x900.png");
-await tapNorm(page, 0.5, 0.7, 1440, 900);
+await tapNorm(page, 0.5, 0.65, 1440, 900);
 await page.waitForTimeout(600);
 await shot(page, "colorGarden--correct-bloom-1440x900.png");
-await tapNorm(page, 0.78, 0.86, 1440, 900);
+await tapNorm(page, 0.76, 0.82, 1440, 900);
 await page.waitForTimeout(600);
 await shot(page, "colorGarden--correct-bloom-alt-1440x900.png");
 
@@ -62,9 +63,9 @@ for (let i = 1; i <= 3; i++) {
   await goto(page, 1440, 900, `review=colors&roundShot=${i}`);
   await shot(page, `colorGarden--round${i}-1440x900.png`);
   for (const [x, y] of [
-    [0.22, 0.86],
-    [0.5, 0.7],
-    [0.78, 0.86],
+    [0.22, 0.82],
+    [0.5, 0.65],
+    [0.76, 0.82],
   ]) {
     await tapNorm(page, x, y, 1440, 900);
     await page.waitForTimeout(400);

@@ -41,20 +41,20 @@ export const CHOICE_SLOTS: Record<PocAspect, [Norm, Norm, Norm]> = {
 };
 
 /**
- * Color Garden — feet anchors in the three empty soil beds.
- * Landscape mural: front-left, mid-center, front-right (triangle).
- * Portrait mural: left, right, bottom-center (inverted triangle).
+ * Color Garden — visual centers of the three empty soil beds (not feet).
+ * Landscape: left / mid-back / right triangle on 1440×900 mural.
+ * Portrait: left / bottom-center / right inverted triangle on 390×844 mural.
  */
 export const COLOR_BED_SLOTS: Record<PocAspect, [Norm, Norm, Norm]> = {
   landscape: [
-    { x: 0.22, y: 0.9, scale: 1 },
-    { x: 0.5, y: 0.73, scale: 1 },
-    { x: 0.78, y: 0.9, scale: 1 },
+    { x: 0.22, y: 0.82, scale: 1 },
+    { x: 0.5, y: 0.65, scale: 1 },
+    { x: 0.76, y: 0.82, scale: 1 },
   ],
   portrait: [
-    { x: 0.26, y: 0.6, scale: 1 },
-    { x: 0.74, y: 0.6, scale: 1 },
-    { x: 0.5, y: 0.86, scale: 1 },
+    { x: 0.24, y: 0.78, scale: 1 },
+    { x: 0.52, y: 0.9, scale: 1 },
+    { x: 0.82, y: 0.72, scale: 1 },
   ],
 };
 

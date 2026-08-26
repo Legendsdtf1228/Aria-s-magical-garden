@@ -84,7 +84,10 @@ export class ColorGardenScene extends ChoiceScene {
     return Math.min(spec.max, Math.max(spec.min, Math.round(fromFrac)));
   }
 
-  /** Equal visual weight: same display height for every prop; large soft soil shadow. */
+  /**
+   * Center each prop in a soil bed (origin 0.5/0.5) so the whole silhouette
+   * sits in dirt — not feet-anchored into the bed below / grass above.
+   */
   protected placeChoices() {
     const slots = this.choiceSlots();
     const targetH = this.choiceTargetHeightPx() ?? this.worldH * 0.22;
@@ -95,16 +98,16 @@ export class ColorGardenScene extends ChoiceScene {
       const p = { x: slot.x * this.worldW, y: slot.y * this.worldH };
 
       this.add
-        .ellipse(p.x, p.y - 6, targetH * 0.85, targetH * 0.22, 0x1a2010, 0.4)
+        .ellipse(p.x, p.y + targetH * 0.42, targetH * 0.78, targetH * 0.2, 0x1a2010, 0.42)
         .setDepth(4);
 
-      const img = this.add.image(p.x, p.y, item.texture).setOrigin(0.5, 1).setDepth(5);
+      const img = this.add.image(p.x, p.y, item.texture).setOrigin(0.5, 0.5).setDepth(5);
       const aspect = img.width / Math.max(1, img.height);
       img.setDisplaySize(targetH * aspect, targetH);
 
-      const hit = Math.max(touch, img.displayWidth * 1.08, img.displayHeight * 1.08);
+      const hit = Math.max(touch, img.displayWidth * 1.1, img.displayHeight * 1.1);
       img.setInteractive(
-        new Phaser.Geom.Rectangle(-hit / 2, -hit, hit, hit),
+        new Phaser.Geom.Rectangle(-hit / 2, -hit / 2, hit, hit),
         Phaser.Geom.Rectangle.Contains,
       );
       img.setData("choiceId", item.id);
@@ -114,7 +117,7 @@ export class ColorGardenScene extends ChoiceScene {
 
       if (this.showTouchDebug) {
         this.add
-          .rectangle(p.x, p.y - hit / 2, hit, hit, 0x00ff88, 0.22)
+          .rectangle(p.x, p.y, hit, hit, 0x00ff88, 0.22)
           .setStrokeStyle(3, 0x00cc66, 0.9)
           .setDepth(40);
       }
@@ -158,7 +161,7 @@ export class ColorGardenScene extends ChoiceScene {
 
   protected playCorrect(item: ChoiceItem, img: Phaser.GameObjects.Image) {
     const glow = this.add
-      .circle(img.x, img.y - img.displayHeight * 0.45, img.displayWidth * 0.55, 0xfff6a8, 0.35)
+      .circle(img.x, img.y, img.displayWidth * 0.6, 0xfff6a8, 0.35)
       .setDepth(6);
     this.tweens.add({
       targets: glow,
@@ -179,10 +182,10 @@ export class ColorGardenScene extends ChoiceScene {
   private bloomBed(item: ChoiceItem, img: Phaser.GameObjects.Image) {
     const color = BLOOM_HEX[item.id] ?? 0xfff2a8;
     const bedX = img.x;
-    const bedY = img.y - 8;
+    const bedY = img.y + img.displayHeight * 0.15;
     for (let i = 0; i < 10; i++) {
       const ang = (i / 10) * Math.PI * 2 + Math.random() * 0.3;
-      const dist = 18 + Math.random() * (img.displayWidth * 0.35);
+      const dist = 18 + Math.random() * (img.displayWidth * 0.4);
       const petal = this.add
         .circle(bedX, bedY, 7 + Math.random() * 6, color, 0.95)
         .setDepth(7)
@@ -203,9 +206,8 @@ export class ColorGardenScene extends ChoiceScene {
         onComplete: () => petal.destroy(),
       });
     }
-    // Soft matching flower mound rising in the bed
     const mound = this.add
-      .ellipse(bedX, bedY - 6, img.displayWidth * 0.85, img.displayHeight * 0.22, color, 0.55)
+      .ellipse(bedX, bedY, img.displayWidth * 0.9, img.displayHeight * 0.28, color, 0.55)
       .setDepth(3)
       .setScale(0.3);
     this.tweens.add({
@@ -227,8 +229,9 @@ export class ColorGardenScene extends ChoiceScene {
   private celebrateFriend(img: Phaser.GameObjects.Image) {
     const key = FRIEND_KEYS.find((k) => this.textures.exists(k)) ?? FRIEND_KEYS[0];
     if (!this.textures.exists(key)) return;
+    const feetY = img.y + img.displayHeight * 0.5;
     const friend = this.add
-      .image(img.x + img.displayWidth * 0.55, img.y, key)
+      .image(img.x + img.displayWidth * 0.55, feetY, key)
       .setOrigin(0.5, 1)
       .setDepth(12)
       .setAlpha(0);
@@ -237,13 +240,13 @@ export class ColorGardenScene extends ChoiceScene {
     this.tweens.add({
       targets: friend,
       alpha: 1,
-      y: img.y - 10,
+      y: feetY - 10,
       duration: 280,
       ease: "Back.easeOut",
     });
     this.tweens.add({
       targets: friend,
-      y: img.y - this.worldH * 0.05,
+      y: feetY - this.worldH * 0.05,
       duration: 280,
       yoyo: true,
       repeat: 2,
@@ -264,7 +267,7 @@ export class ColorGardenScene extends ChoiceScene {
       const s = this.add
         .circle(
           img.x + (Math.random() - 0.5) * img.displayWidth * 1.2,
-          img.y - img.displayHeight * (0.2 + Math.random() * 0.7),
+          img.y + (Math.random() - 0.5) * img.displayHeight,
           3 + Math.random() * 4,
           0xfff2a8,
           0.95,
