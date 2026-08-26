@@ -46,25 +46,26 @@ await shot(page, "colorGarden--portrait-390x844.png");
 await goto(page, 1440, 900, "review=colors&debugTouch=1");
 await shot(page, "colorGarden--touch-debug-1440x900.png");
 
-// Wrong then correct on landscape (beds: left/center/right)
+// Wrong then correct on landscape (front beds)
 await goto(page, 1440, 900, "review=colors");
-// Tap left bed first — may be wrong or correct; capture reaction either way
-await tapNorm(page, 0.23, 0.7, 1440, 900);
+await tapNorm(page, 0.2, 0.82, 1440, 900);
 await shot(page, "colorGarden--wrong-tap-1440x900.png");
-await tapNorm(page, 0.5, 0.72, 1440, 900);
-await page.waitForTimeout(400);
+await tapNorm(page, 0.5, 0.84, 1440, 900);
+await page.waitForTimeout(600);
 await shot(page, "colorGarden--correct-bloom-1440x900.png");
+await tapNorm(page, 0.8, 0.82, 1440, 900);
+await page.waitForTimeout(600);
+await shot(page, "colorGarden--correct-bloom-alt-1440x900.png");
 
-// Three consecutive rounds — different targets (reload between to reset)
+// Three consecutive rounds
 for (let i = 1; i <= 3; i++) {
   await goto(page, 1440, 900, `review=colors&roundShot=${i}`);
   await shot(page, `colorGarden--round${i}-1440x900.png`);
-  // Tap all three beds to eventually get a correct and advance
-  for (const x of [0.23, 0.5, 0.77]) {
-    await tapNorm(page, x, 0.72, 1440, 900);
-    await page.waitForTimeout(500);
+  for (const x of [0.2, 0.5, 0.8]) {
+    await tapNorm(page, x, 0.83, 1440, 900);
+    await page.waitForTimeout(400);
   }
-  await page.waitForTimeout(1800);
+  await page.waitForTimeout(2000);
   await shot(page, `colorGarden--round${i}-after-1440x900.png`);
 }
 

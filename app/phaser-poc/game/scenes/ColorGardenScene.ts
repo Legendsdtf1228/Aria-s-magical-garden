@@ -80,8 +80,7 @@ export class ColorGardenScene extends ChoiceScene {
 
   protected choiceTargetHeightPx(): number | null {
     const spec = COLOR_CHOICE_SIZE[this.aspect];
-    // Scale with live canvas while staying in toddler size band
-    const fromFrac = this.aspect === "landscape" ? this.worldH * 0.205 : this.worldH * 0.16;
+    const fromFrac = this.aspect === "landscape" ? this.worldH * 0.24 : this.worldH * 0.185;
     return Math.min(spec.max, Math.max(spec.min, Math.round(fromFrac)));
   }
 
