@@ -80,8 +80,45 @@ export class ColorGardenScene extends ChoiceScene {
 
   protected choiceTargetHeightPx(): number | null {
     const spec = COLOR_CHOICE_SIZE[this.aspect];
-    const fromFrac = this.aspect === "landscape" ? this.worldH * 0.24 : this.worldH * 0.185;
+    const fromFrac = this.aspect === "landscape" ? this.worldH * 0.26 : this.worldH * 0.2;
     return Math.min(spec.max, Math.max(spec.min, Math.round(fromFrac)));
+  }
+
+  /** Equal visual weight: same display height for every prop; large soft soil shadow. */
+  protected placeChoices() {
+    const slots = this.choiceSlots();
+    const targetH = this.choiceTargetHeightPx() ?? this.worldH * 0.22;
+    const touch = this.minTouchPx();
+
+    this.choices.forEach((item, i) => {
+      const slot = slots[i];
+      const p = { x: slot.x * this.worldW, y: slot.y * this.worldH };
+
+      this.add
+        .ellipse(p.x, p.y - 6, targetH * 0.85, targetH * 0.22, 0x1a2010, 0.4)
+        .setDepth(4);
+
+      const img = this.add.image(p.x, p.y, item.texture).setOrigin(0.5, 1).setDepth(5);
+      const aspect = img.width / Math.max(1, img.height);
+      img.setDisplaySize(targetH * aspect, targetH);
+
+      const hit = Math.max(touch, img.displayWidth * 1.08, img.displayHeight * 1.08);
+      img.setInteractive(
+        new Phaser.Geom.Rectangle(-hit / 2, -hit, hit, hit),
+        Phaser.Geom.Rectangle.Contains,
+      );
+      img.setData("choiceId", item.id);
+      img.setData("slotIndex", i);
+      img.on("pointerdown", () => this.pick(item, img));
+      this.sprites.push(img);
+
+      if (this.showTouchDebug) {
+        this.add
+          .rectangle(p.x, p.y - hit / 2, hit, hit, 0x00ff88, 0.22)
+          .setStrokeStyle(3, 0x00cc66, 0.9)
+          .setDepth(40);
+      }
+    });
   }
 
   protected celebrationMs(): number {

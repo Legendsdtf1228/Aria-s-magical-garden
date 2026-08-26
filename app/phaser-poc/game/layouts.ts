@@ -41,19 +41,20 @@ export const CHOICE_SLOTS: Record<PocAspect, [Norm, Norm, Norm]> = {
 };
 
 /**
- * Color Garden — feet anchors in the center of each front soil bed
- * (left / center / right). Calibrated to cover-mode mural at 1440×900 / 390×844.
+ * Color Garden — feet anchors in the three empty soil beds.
+ * Landscape mural: front-left, mid-center, front-right (triangle).
+ * Portrait mural: left, right, bottom-center (inverted triangle).
  */
 export const COLOR_BED_SLOTS: Record<PocAspect, [Norm, Norm, Norm]> = {
   landscape: [
-    { x: 0.2, y: 0.855, scale: 1 },
-    { x: 0.5, y: 0.875, scale: 1 },
-    { x: 0.8, y: 0.855, scale: 1 },
+    { x: 0.22, y: 0.9, scale: 1 },
+    { x: 0.5, y: 0.73, scale: 1 },
+    { x: 0.78, y: 0.9, scale: 1 },
   ],
   portrait: [
-    { x: 0.28, y: 0.62, scale: 1 },
-    { x: 0.72, y: 0.62, scale: 1 },
-    { x: 0.5, y: 0.84, scale: 1 },
+    { x: 0.26, y: 0.6, scale: 1 },
+    { x: 0.74, y: 0.6, scale: 1 },
+    { x: 0.5, y: 0.86, scale: 1 },
   ],
 };
 
