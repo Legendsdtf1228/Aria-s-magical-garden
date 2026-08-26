@@ -134,7 +134,6 @@ export default function PhaserPocPage() {
           Load error: {loadError}
         </p>
       )}
-      <p className="phaser-poc-badge">Phaser POC · not the full game</p>
     </main>
   );
 }

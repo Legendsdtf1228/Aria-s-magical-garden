@@ -1,15 +1,16 @@
 import { ChoiceScene, type ChoiceItem } from "./ChoiceScene";
 import { EventBus } from "../EventBus";
 
+/** Coordinated toddler cast — full-body, consistent scale. */
 const CAST: ChoiceItem[] = [
-  { id: "butterfly", texture: "char-butterfly", en: "Butterfly", es: "Mariposa", gender: "f" },
-  { id: "bunny", texture: "char-bunny", en: "Bunny", es: "Conejito", gender: "m" },
-  { id: "bird", texture: "char-bird", en: "Bird", es: "Pajarito", gender: "m" },
-  { id: "ladybug", texture: "char-ladybug", en: "Ladybug", es: "Mariquita", gender: "f" },
-  { id: "bee", texture: "char-bee", en: "Bee", es: "Abejita", gender: "f" },
-  { id: "frog", texture: "char-frog", en: "Frog", es: "Rana", gender: "f" },
-  { id: "cat", texture: "char-cat", en: "Cat", es: "Gatito", gender: "m" },
-  { id: "puppy", texture: "char-puppy", en: "Puppy", es: "Perrito", gender: "m" },
+  { id: "bunny", texture: "char-bunny", en: "Bunny", es: "conejito", gender: "m" },
+  { id: "frog", texture: "char-frog", en: "Frog", es: "rana", gender: "f" },
+  { id: "puppy", texture: "char-puppy", en: "Puppy", es: "perrito", gender: "m" },
+  { id: "cat", texture: "char-cat", en: "Cat", es: "gatito", gender: "m" },
+  { id: "butterfly", texture: "char-butterfly", en: "Butterfly", es: "mariposa", gender: "f" },
+  { id: "bird", texture: "char-bird", en: "Bird", es: "pajarito", gender: "m" },
+  { id: "bee", texture: "char-bee", en: "Bee", es: "abejita", gender: "f" },
+  { id: "ladybug", texture: "char-ladybug", en: "Ladybug", es: "mariquita", gender: "f" },
 ];
 
 function shuffle<T>(arr: T[]): T[] {
@@ -21,7 +22,11 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-/** Find My Friend — ChoiceScene proof. Exactly three painted animals. */
+/**
+ * Find My Friend — first complete Phaser activity.
+ * Meadow scene, exactly three coordinated animals, bilingual instruction,
+ * tap reaction, wrong wiggle, correct celebration. No cards or CSS UI.
+ */
 export class FindFriendScene extends ChoiceScene {
   constructor() {
     super("FindFriend");

@@ -1,0 +1,160 @@
+{
+  "generatedAt": "2026-08-26T14:52:08.592Z",
+  "branch": "feat/phaser-poc",
+  "commitSha": "b64bcfa3ff6818214584c41a7eca72395c74a06e",
+  "base": "https://arias-color-garden.old-rice-0a9f.workers.dev",
+  "total": 30,
+  "failed": 0,
+  "results": [
+    {
+      "path": "/art/scenes/garden-map-landscape.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/scenes/garden-map-portrait.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/characters/poc-cast-v1/bunny-idle.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/characters/poc-cast-v1/frog-idle.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/characters/poc-cast-v1/puppy-idle.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/characters/poc-cast-v1/cat-idle.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/characters/poc-cast-v1/butterfly-idle.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/characters/poc-cast-v1/bird-idle.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/characters/poc-cast-v1/bee-idle.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/characters/poc-cast-v1/ladybug-idle.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/hub-props/prop-lily-pad.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/hub-props/prop-pot-red.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/hub-props/prop-pot-blue.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/hub-props/prop-pot-yellow.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/hub-props/prop-pot-purple.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/hub-props/prop-watering-can.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/hub-props/prop-shape-triangle.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/hub-props/prop-shape-circle.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/hub-props/prop-shape-square.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/hub-props/prop-shape-star.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/hub-props/prop-chimes.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/hub-props/prop-drum.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/hub-props/prop-harp.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/hub-props/prop-xylophone.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/hub-props/prop-birdhouse.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/hub-props/prop-magnifier.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/hub-props/prop-picnic-basket.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/ui/ui-home.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/ui/ui-replay.webp",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/art/ui/ui-parent-flower.webp",
+      "status": 200,
+      "ok": true
+    }
+  ]
+}

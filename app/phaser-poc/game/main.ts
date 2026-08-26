@@ -22,6 +22,10 @@ export default function StartGame(parent: string) {
     typeof window !== "undefined"
       ? new URLSearchParams(window.location.search).get("review")
       : null;
+  const zone =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("zone")
+      : null;
   const portrait =
     typeof window !== "undefined" &&
     detectAspect(window.innerWidth, window.innerHeight) === "portrait";
@@ -50,5 +54,7 @@ export default function StartGame(parent: string) {
 
   const game = new Game(config);
   game.registry.set("pocStartScene", review);
+  const zoneOk = zone === "cottage" || zone === "pond" || zone === "gazebo" || zone === "picnic";
+  game.registry.set("pocOpenZone", zoneOk ? zone : null);
   return game;
 }

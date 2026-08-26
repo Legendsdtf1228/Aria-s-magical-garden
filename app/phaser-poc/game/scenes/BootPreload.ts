@@ -1,6 +1,6 @@
 import Phaser from "../phaserCompat";
 import { EventBus } from "../EventBus";
-import { POC_ASSETS, resolveStartScene } from "../assetManifest";
+import { HUB_SHARED_ASSETS, ACTIVITY_ASSETS, resolveStartScene } from "../assetManifest";
 
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -13,8 +13,8 @@ export class BootScene extends Phaser.Scene {
 }
 
 /**
- * Preload with progress, load-error reporting, timeout, and bilingual retry.
- * Starts the review deep-link scene only AFTER assets are ready (no race).
+ * Cold preload: hub shared cast + landmarks + UI only.
+ * Activity murals/food lazy-load when navigating (or when deep-linking an activity).
  */
 export class PreloadScene extends Phaser.Scene {
   private failed: { key: string; path: string; status?: string }[] = [];
@@ -60,26 +60,30 @@ export class PreloadScene extends Phaser.Scene {
     this.load.on("progress", (v: number) => {
       this.bar.width = Math.max(8, w * 0.5 * v);
     });
-
     this.load.on("filecomplete", (key: string) => {
       this.label.setText(key);
     });
-
     this.load.on("loaderror", (file: Phaser.Loader.File) => {
-      const path = (file as { url?: string; src?: string }).url
-        || (file as { src?: string }).src
-        || file.key;
+      const path =
+        (file as { url?: string; src?: string }).url ||
+        (file as { src?: string }).src ||
+        file.key;
       this.failed.push({ key: file.key, path: String(path), status: "loaderror" });
       this.label.setText(`Error: ${file.key}\n${path}`);
       console.error("[PhaserPOC] loaderror", file.key, path);
       EventBus.emit("poc-load-error", { key: file.key, path });
     });
 
-    for (const a of POC_ASSETS) {
-      this.load.image(a.key, a.path);
+    const start = resolveStartScene(this.game.registry.get("pocStartScene") as string | null);
+    const queue = [...HUB_SHARED_ASSETS];
+    // Deep-link into an activity: also queue that activity's art now
+    if (start !== "GardenHub" && ACTIVITY_ASSETS[start]) {
+      queue.push(...ACTIVITY_ASSETS[start]);
+    }
+    for (const a of queue) {
+      if (!this.textures.exists(a.key)) this.load.image(a.key, a.path);
     }
 
-    // Never hang forever on a dark bar
     this.watchdog = this.time.delayedCall(20000, () => {
       if (this.done) return;
       if (!this.failed.length) {
@@ -98,8 +102,10 @@ export class PreloadScene extends Phaser.Scene {
       this.showRetry();
       return;
     }
-    // Verify textures actually exist in the cache
-    for (const a of POC_ASSETS) {
+    const start = resolveStartScene(this.game.registry.get("pocStartScene") as string | null);
+    const needed = [...HUB_SHARED_ASSETS];
+    if (start !== "GardenHub" && ACTIVITY_ASSETS[start]) needed.push(...ACTIVITY_ASSETS[start]);
+    for (const a of needed) {
       if (!this.textures.exists(a.key)) {
         this.failed.push({ key: a.key, path: a.path, status: "missing-texture" });
       }
@@ -108,14 +114,13 @@ export class PreloadScene extends Phaser.Scene {
       this.showRetry();
       return;
     }
-    this.finishOk();
+    this.finishOk(start);
   }
 
-  private finishOk() {
+  private finishOk(start: string) {
     if (this.done) return;
     this.done = true;
     this.watchdog?.remove(false);
-    const start = resolveStartScene(this.game.registry.get("pocStartScene") as string | null);
     EventBus.emit("poc-assets-ready", { start, failed: [] });
     this.scene.start(start);
   }
@@ -177,4 +182,29 @@ export class PreloadScene extends Phaser.Scene {
 
     EventBus.emit("poc-load-error", { failed: this.failed });
   }
+}
+
+/** Lazy-load activity packs before starting that scene from the hub. */
+export function ensureActivityAssets(
+  scene: Phaser.Scene,
+  activityKey: string,
+  onReady: () => void,
+) {
+  const pack = ACTIVITY_ASSETS[activityKey];
+  if (!pack?.length) {
+    onReady();
+    return;
+  }
+  const missing = pack.filter((a) => !scene.textures.exists(a.key));
+  if (!missing.length) {
+    onReady();
+    return;
+  }
+  for (const a of missing) scene.load.image(a.key, a.path);
+  scene.load.once("complete", () => onReady());
+  scene.load.once("loaderror", (file: Phaser.Loader.File) => {
+    console.error("[PhaserPOC] activity loaderror", file.key);
+    EventBus.emit("poc-load-error", { key: file.key, path: file.key });
+  });
+  scene.load.start();
 }

@@ -1,6 +1,6 @@
 import Phaser from "../phaserCompat";
 import { BaseGardenScene } from "./BaseGardenScene";
-import { CHOICE_SLOTS, type Norm } from "../layouts";
+import { CHAR_HEIGHT_FRAC, CHOICE_SLOTS, type Norm } from "../layouts";
 import { EventBus } from "../EventBus";
 
 export type ChoiceItem = {
@@ -13,12 +13,13 @@ export type ChoiceItem = {
 
 /**
  * ChoiceScene — one spoken instruction, exactly three large visual choices.
- * No website cards. Used for Find / Colors / Counting / Shapes / Sounds.
+ * No website cards. Find Friend is the first complete Phaser activity.
  */
 export abstract class ChoiceScene extends BaseGardenScene {
   protected target!: ChoiceItem;
   protected choices: ChoiceItem[] = [];
   protected sprites: Phaser.GameObjects.Image[] = [];
+  protected roundReady = false;
 
   constructor(key: string) {
     super(key);
@@ -29,6 +30,7 @@ export abstract class ChoiceScene extends BaseGardenScene {
   abstract onCorrect(item: ChoiceItem): void;
 
   create() {
+    this.roundReady = false;
     this.bindSafeResize(() => this.rebuild());
     this.rebuild();
     this.emitReady();
@@ -40,23 +42,38 @@ export abstract class ChoiceScene extends BaseGardenScene {
     const bg = this.backgroundKeys();
     this.placeBackground(bg.landscape, bg.portrait);
     this.addSafeChrome();
-    const round = this.buildRound();
-    this.target = round.target;
-    this.choices = round.choices.slice(0, 3);
-    while (this.choices.length < 3) {
-      this.choices.push(this.choices[0]);
+
+    if (!this.roundReady) {
+      const round = this.buildRound();
+      this.target = round.target;
+      this.choices = round.choices.slice(0, 3);
+      while (this.choices.length < 3) this.choices.push(this.choices[0]);
+      this.roundReady = true;
+      const art = this.target.gender === "f" ? "la" : "el";
+      this.speak(
+        `Find the ${this.target.en.toLowerCase()}.`,
+        `Encuentra ${art} ${this.target.es.toLowerCase()}.`,
+      );
     }
 
     const art = this.target.gender === "f" ? "la" : "el";
-    this.addWoodenSign(`Find the ${this.target.en}`, `Encuentra ${art} ${this.target.es}`);
-    this.speak(
-      `Find the ${this.target.en.toLowerCase()}.`,
-      `Encuentra ${art} ${this.target.es.toLowerCase()}.`,
-    );
+    const esNoun = this.target.es.toLowerCase();
+    this.addWoodenSign(`Find the ${this.target.en}`, `Encuentra ${art} ${esNoun}.`);
 
     const slots = CHOICE_SLOTS[this.aspect];
     this.choices.forEach((item, i) => {
-      const img = this.addCharacter(item.texture, slots[i] as Norm, 0.2);
+      const slot = slots[i] as Norm;
+      const p = {
+        x: slot.x * this.worldW,
+        y: slot.y * this.worldH,
+      };
+      // Contact shadow under feet
+      this.add
+        .ellipse(p.x, p.y - 2, this.worldW * 0.08, this.worldH * 0.022, 0x1a2010, 0.35)
+        .setDepth(4);
+
+      const img = this.addCharacter(item.texture, slot, CHAR_HEIGHT_FRAC);
+      img.setDepth(5);
       img.setData("choiceId", item.id);
       img.on("pointerdown", () => this.pick(item, img));
       this.sprites.push(img);
@@ -66,17 +83,54 @@ export abstract class ChoiceScene extends BaseGardenScene {
   pick(item: ChoiceItem, img: Phaser.GameObjects.Image) {
     if (this.busy) return;
     EventBus.emit("poc-tap");
+    // Immediate tap reaction
+    this.tweens.add({
+      targets: img,
+      scaleX: img.scaleX * 1.08,
+      scaleY: img.scaleY * 1.08,
+      duration: 90,
+      yoyo: true,
+    });
+
     if (item.id !== this.target.id) {
       this.gentleWiggle(img);
+      this.tweens.add({
+        targets: img,
+        alpha: 0.55,
+        duration: 120,
+        yoyo: true,
+        hold: 80,
+      });
       this.speak("Try another one.", "Intenta otra.");
       return;
     }
+
     this.busy = true;
     this.hopCelebrate(img);
-    this.speak(`${item.en}.`, `${item.es}.`);
+    // Happy sparkles
+    for (let i = 0; i < 6; i++) {
+      const s = this.add
+        .circle(
+          img.x + (Math.random() - 0.5) * img.displayWidth,
+          img.y - img.displayHeight * (0.3 + Math.random() * 0.5),
+          3 + Math.random() * 3,
+          0xfff2a8,
+          0.9,
+        )
+        .setDepth(20);
+      this.tweens.add({
+        targets: s,
+        y: s.y - 30,
+        alpha: 0,
+        duration: 500,
+        onComplete: () => s.destroy(),
+      });
+    }
+    this.speak(`Yes! ${item.en}.`, `¡Sí! ${item.es.toLowerCase()}.`);
     this.onCorrect(item);
-    this.time.delayedCall(1400, () => {
+    this.time.delayedCall(1600, () => {
       this.busy = false;
+      this.roundReady = false;
       this.rebuild();
     });
   }

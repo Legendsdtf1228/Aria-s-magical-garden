@@ -7,6 +7,7 @@ import {
   CHOICE_SLOTS,
   detectAspect,
   HUB_LANDMARKS,
+  HUB_ZONES,
   LAYOUT,
   MIN_TOUCH_CSS_PX,
   toPx,
@@ -29,9 +30,14 @@ test("choice slots are exactly three normalized feet anchors", () => {
   assert.ok(MIN_TOUCH_CSS_PX >= 96);
 });
 
-test("hub landmarks are visible activity entries without a menu grid", () => {
+test("hub uses four natural zones — not nine sticker landmarks", () => {
+  assert.equal(HUB_ZONES.landscape.length, 4);
+  assert.equal(HUB_ZONES.portrait.length, 4);
+  for (const z of HUB_ZONES.landscape) {
+    assert.ok(z.hit.w > 0.1 && z.hit.h > 0.1);
+    assert.ok(z.activities.length >= 2 && z.activities.length <= 3);
+  }
   assert.ok(HUB_LANDMARKS.landscape.length >= 3);
-  assert.ok(HUB_LANDMARKS.landscape.every((m) => m.pos.x > 0 && m.pos.y > 0));
 });
 
 test("phaser POC isolated entry and scene types exist", () => {
@@ -66,9 +72,13 @@ test("phaser POC does not import emoji or big-choice website cards", () => {
 });
 
 test("phaser POC asset manifest lists every preload path", async () => {
-  const { POC_ASSETS, resolveStartScene } = await import("../app/phaser-poc/game/assetManifest.ts");
-  assert.ok(POC_ASSETS.length >= 20);
-  assert.ok(POC_ASSETS.every((a) => a.key && a.path.startsWith("/art/")));
+  const { HUB_SHARED_ASSETS, ACTIVITY_ASSETS, resolveStartScene } = await import(
+    "../app/phaser-poc/game/assetManifest.ts"
+  );
+  assert.ok(HUB_SHARED_ASSETS.length >= 20);
+  assert.ok(HUB_SHARED_ASSETS.every((a) => a.key && a.path.startsWith("/art/")));
+  assert.ok(ACTIVITY_ASSETS.FindFriend?.length >= 1);
+  assert.ok(ACTIVITY_ASSETS.FeedFriends?.length >= 1);
   assert.equal(resolveStartScene("findFriend"), "FindFriend");
   assert.equal(resolveStartScene("feed"), "FeedFriends");
   assert.equal(resolveStartScene("freePlay"), "FreePlay");
