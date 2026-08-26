@@ -29,6 +29,25 @@ export abstract class ChoiceScene extends BaseGardenScene {
   abstract buildRound(): { target: ChoiceItem; choices: ChoiceItem[] };
   abstract onCorrect(item: ChoiceItem): void;
 
+  /** Spoken / signed prompts — Find Friend default; Color Garden overrides. */
+  protected instructionEn(item: ChoiceItem): string {
+    return `Find the ${item.en.toLowerCase()}.`;
+  }
+  protected instructionEs(item: ChoiceItem): string {
+    const art = item.gender === "f" ? "la" : "el";
+    return `Encuentra ${art} ${item.es.toLowerCase()}.`;
+  }
+  protected signEn(item: ChoiceItem): string {
+    return `Find the ${item.en}`;
+  }
+  protected signEs(item: ChoiceItem): string {
+    const art = item.gender === "f" ? "la" : "el";
+    return `Encuentra ${art} ${item.es.toLowerCase()}.`;
+  }
+  protected choiceHeightFrac(): number {
+    return CHAR_HEIGHT_FRAC;
+  }
+
   create() {
     this.roundReady = false;
     this.bindSafeResize(() => this.rebuild());
@@ -49,18 +68,13 @@ export abstract class ChoiceScene extends BaseGardenScene {
       this.choices = round.choices.slice(0, 3);
       while (this.choices.length < 3) this.choices.push(this.choices[0]);
       this.roundReady = true;
-      const art = this.target.gender === "f" ? "la" : "el";
-      this.speak(
-        `Find the ${this.target.en.toLowerCase()}.`,
-        `Encuentra ${art} ${this.target.es.toLowerCase()}.`,
-      );
+      this.speak(this.instructionEn(this.target), this.instructionEs(this.target));
     }
 
-    const art = this.target.gender === "f" ? "la" : "el";
-    const esNoun = this.target.es.toLowerCase();
-    this.addWoodenSign(`Find the ${this.target.en}`, `Encuentra ${art} ${esNoun}.`);
+    this.addWoodenSign(this.signEn(this.target), this.signEs(this.target));
 
     const slots = CHOICE_SLOTS[this.aspect];
+    const heightFrac = this.choiceHeightFrac();
     this.choices.forEach((item, i) => {
       const slot = slots[i] as Norm;
       const p = {
@@ -72,7 +86,7 @@ export abstract class ChoiceScene extends BaseGardenScene {
         .ellipse(p.x, p.y - 2, this.worldW * 0.08, this.worldH * 0.022, 0x1a2010, 0.35)
         .setDepth(4);
 
-      const img = this.addCharacter(item.texture, slot, CHAR_HEIGHT_FRAC);
+      const img = this.addCharacter(item.texture, slot, heightFrac);
       img.setDepth(5);
       img.setData("choiceId", item.id);
       img.on("pointerdown", () => this.pick(item, img));

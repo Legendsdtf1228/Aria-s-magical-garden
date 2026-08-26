@@ -2,6 +2,7 @@ import { AUTO, Game, Scale } from "./phaserCompat";
 import { BootScene, PreloadScene } from "./scenes/BootPreload";
 import { GardenHubScene } from "./scenes/GardenHubScene";
 import { FindFriendScene } from "./scenes/FindFriendScene";
+import { ColorGardenScene } from "./scenes/ColorGardenScene";
 import { FeedFriendsScene } from "./scenes/FeedFriendsScene";
 import { FreePlayScene } from "./scenes/FreePlayScene";
 import { LAYOUT, detectAspect } from "./layouts";
@@ -48,7 +49,15 @@ export default function StartGame(parent: string) {
     input: {
       activePointers: 3,
     },
-    scene: [BootScene, PreloadScene, GardenHubScene, FindFriendScene, FeedFriendsScene, FreePlayScene],
+    scene: [
+      BootScene,
+      PreloadScene,
+      GardenHubScene,
+      FindFriendScene,
+      ColorGardenScene,
+      FeedFriendsScene,
+      FreePlayScene,
+    ],
     banner: false,
   };
 

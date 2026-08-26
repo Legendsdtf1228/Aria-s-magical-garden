@@ -50,6 +50,7 @@ test("phaser POC isolated entry and scene types exist", () => {
     "ExploreScene.ts",
     "GardenHubScene.ts",
     "FindFriendScene.ts",
+    "ColorGardenScene.ts",
     "FeedFriendsScene.ts",
     "FreePlayScene.ts",
   ]) {
@@ -61,6 +62,7 @@ test("phaser POC does not import emoji or big-choice website cards", () => {
   const files = [
     "app/phaser-poc/page.tsx",
     "app/phaser-poc/game/scenes/FindFriendScene.ts",
+    "app/phaser-poc/game/scenes/ColorGardenScene.ts",
     "app/phaser-poc/game/scenes/FeedFriendsScene.ts",
     "app/phaser-poc/game/scenes/FreePlayScene.ts",
     "app/phaser-poc/game/scenes/GardenHubScene.ts",
@@ -78,12 +80,24 @@ test("phaser POC asset manifest lists every preload path", async () => {
   assert.ok(HUB_SHARED_ASSETS.length >= 20);
   assert.ok(HUB_SHARED_ASSETS.every((a) => a.key && a.path.startsWith("/art/")));
   assert.ok(ACTIVITY_ASSETS.FindFriend?.length >= 1);
+  assert.ok(ACTIVITY_ASSETS.ColorGarden?.length >= 3);
   assert.ok(ACTIVITY_ASSETS.FeedFriends?.length >= 1);
   assert.equal(resolveStartScene("findFriend"), "FindFriend");
+  assert.equal(resolveStartScene("colors"), "ColorGarden");
+  assert.equal(resolveStartScene("colorGarden"), "ColorGarden");
   assert.equal(resolveStartScene("feed"), "FeedFriends");
   assert.equal(resolveStartScene("freePlay"), "FreePlay");
   assert.equal(resolveStartScene("hub"), "GardenHub");
   assert.equal(resolveStartScene(null), "GardenHub");
+});
+
+test("Color Garden hub activity routes into ColorGarden scene", () => {
+  for (const aspect of ["landscape", "portrait"]) {
+    const cottage = HUB_ZONES[aspect].find((z) => z.id === "cottage");
+    assert.ok(cottage);
+    const colors = cottage.activities.find((a) => a.id === "colors");
+    assert.equal(colors?.scene, "ColorGarden");
+  }
 });
 
 test("progress storage key remains unchanged for POC shell", () => {
